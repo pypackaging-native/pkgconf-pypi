@@ -1,0 +1,18 @@
+# To use:
+#   $ conda env create -f environment.yml  # `mamba` works too for this command
+#   $ conda activate pkgconf-pypi-dev
+#
+name: pkgconf-pypi-dev
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - c-compiler
+  - meson
+  - meson-python
+  - ninja
+  - pip
+  - build
+  - numpy
+  - pybind11
+  - pytest
