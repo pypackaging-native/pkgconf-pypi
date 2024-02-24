@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: 2024 The pypackaging-native developers
+#
+# SPDX-License-Identifier: MIT
+
+[build-system]
+build-backend = 'mesonpy'
+requires = ['meson-python']
+
+[project]
+name = 'pkgconf'
+version = '2.1.1'
+description = '`pkgconf` is a program which helps with discovering library dependencies and configuring compiler and linker flags.'
+readme = 'README.md'
+license = {file = 'LICENSE'}
+authors = [
+  {name = 'Ralf Gommers', email = 'ralf.gommers@gmail.com'},
+]
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: MIT License',
+    'License :: OSI Approved :: ISC License (ISCL)',
+    'Programming Language :: C',
+    'Topic :: Software Development',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
+    'Operating System :: Unix',
+    'Operating System :: MacOS',
+]
+
+
+[tool.meson-python.args]
+install = ['--tags=runtime']
+
+
+[tool.cibuildwheel]
+# Build is Python-independent, so we select a single Python version (doesn't
+# matter which one) to ensure we get one build per platform
+build = "cp311-*"
+
+[tool.cibuildwheel.windows]
+config-settings = "setup-args=--vsenv build-dir=build"
+
+[tool.cibuildwheel.macos.environment]
+MACOSX_DEPLOYMENT_TARGET = "10.9"
