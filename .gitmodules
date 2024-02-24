@@ -1,0 +1,3 @@
+[submodule "subprojects/pkgconf"]
+	path = subprojects/pkgconf
+	url = git@github.com:pkgconf/pkgconf.git
