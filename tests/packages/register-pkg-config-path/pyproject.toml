@@ -1,0 +1,10 @@
+[build-system]
+build-backend = 'mesonpy'
+requires = ['meson-python']
+
+[project]
+name = 'example'
+version = '1.0.0'
+
+[project.entry-points.pkg-config]
+example = 'example.pkgconf'
