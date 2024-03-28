@@ -30,7 +30,7 @@ classifiers = [
 
 
 [tool.meson-python.args]
-install = ['--tags=runtime']
+install = ['--tags=runtime,python-runtime']
 
 
 [tool.cibuildwheel]
