@@ -25,3 +25,6 @@ install_symlink('pkg-config',
   install_tag : 'runtime',
   pointing_to : 'pkgconf',
 )
+
+py = import('python').find_installation()
+py.install_sources('src/pkgconf/__init__.py', subdir: 'pkgconf')
