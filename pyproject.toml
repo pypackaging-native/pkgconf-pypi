@@ -28,6 +28,12 @@ classifiers = [
     'Operating System :: MacOS',
 ]
 
+[project.optional-dependencies]
+test =[
+  'pytest',
+  'meson-python',
+  'environment-helpers >= 0.0.4',
+]
 
 [tool.meson-python.args]
 install = ['--tags=runtime,python-runtime']
