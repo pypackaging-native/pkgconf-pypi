@@ -36,7 +36,7 @@ test =[
 ]
 
 [tool.meson-python.args]
-install = ['--tags=runtime,python-runtime']
+install = ['--tags=python-runtime']
 
 
 [tool.cibuildwheel]

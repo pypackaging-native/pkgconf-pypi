@@ -9,22 +9,23 @@ project('pkgconf-pypi',
   meson_version : '>=1.3.2',
 )
 
-# In pyproject.toml we only select the `runtime` tag to install,
-# which contains the pkgconf executable and nothing else.
-subproject('pkgconf',
-  default_options : [
-    'default_library=static',
-    #'with-system-libdir=none',
-  ],
-)
+py = import('python').find_installation(pure: false)
+python_bin_dir = py.get_install_dir() / 'pkgconf' / '.bin'
 
-# FIXME: symlink doesn't get written to intro-install_plan.json,
-#        hence it doesn't end up in the wheel produced by meson-python.
-install_symlink('pkg-config',
-  install_dir : get_option('bindir'),
-  install_tag : 'runtime',
-  pointing_to : 'pkgconf',
-)
-
-py = import('python').find_installation()
 py.install_sources('src/pkgconf/__init__.py', subdir: 'pkgconf')
+
+# In pyproject.toml we only select the `runtime-python` tag to install,
+# which contains the doesn't contain anything from the upstream pkgconf.
+upstream = subproject('pkgconf', default_options : ['default_library=static'])
+
+libpkgconf = upstream.get_variable('libpkgconf')
+pkgconf_exe = upstream.get_variable('pkgconf_exe')
+
+executable(
+  'pkgconf',
+  objects: pkgconf_exe.extract_all_objects(),
+  link_with: upstream.get_variable('libpkgconf'),
+  install_dir: python_bin_dir,
+  install_tag: 'python-runtime',
+  install: true,
+)
