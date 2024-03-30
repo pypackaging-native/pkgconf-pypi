@@ -7,5 +7,4 @@ py.install_sources('example/__init__.py', subdir: 'example')
 py.install_sources('example/pkgconf/__init__.py', subdir: 'example/pkgconf')
 
 pkg = import('pkgconfig')
-pkg.generate(lib)
 pkg.generate(lib, install_dir: py.get_install_dir(pure: true) / 'example' / 'pkgconf')
