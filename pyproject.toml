@@ -40,6 +40,7 @@ pkgconf = 'pkgconf:_entrypoint'
 pkg-config = 'pkgconf:_entrypoint'
 
 [tool.meson-python.args]
+setup = ['--prefix=/build']
 install = ['--tags=python-runtime']
 
 
