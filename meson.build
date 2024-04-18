@@ -12,7 +12,10 @@ project('pkgconf-pypi',
 py = import('python').find_installation(pure: false)
 python_bin_dir = py.get_install_dir() / 'pkgconf' / '.bin'
 
-py.install_sources('src/pkgconf/__init__.py', subdir: 'pkgconf')
+py.install_sources([
+  'src/pkgconf/__init__.py',
+  'src/pkgconf/diagnose.py',
+], subdir: 'pkgconf')
 
 # In pyproject.toml we only select the `runtime-python` tag to install,
 # which contains the doesn't contain anything from the upstream pkgconf.
