@@ -2,6 +2,7 @@ import importlib.metadata
 import importlib.resources
 import os
 import pathlib
+import shutil
 import sys
 import subprocess
 
@@ -50,4 +51,17 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.Popen:
 
 
 def _entrypoint() -> None:
-    run_pkgconf(*sys.argv[1:])
+    args = sys.argv[1:]
+    try:
+        run_pkgconf(*args, check=True)
+    except subprocess.SubprocessError:
+        # If our pkgconf lookup fails, fallback to the system pkgconf/pkg-config.
+        # For simplicity, the previous call will output to stdout/stderr
+        # regardless of its success, since capturing stdout/stderr in order to
+        # replay is tricky. If the fallback path triggers, it will also output
+        # to stdout/stderr, meaning we will have the output of both process
+        # calls. While a bit unexpected, I believe this is the best option for
+        # debugging.
+        system_executable = shutil.which('pkgconf') or shutil.which('pkg-config')
+        if system_executable:
+            subprocess.run([system_executable, *args])
