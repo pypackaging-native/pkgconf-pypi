@@ -2,8 +2,10 @@ import importlib.metadata
 import importlib.resources
 import os
 import pathlib
+import subprocess
 
 from collections.abc import Sequence
+from typing import Any
 
 
 def get_executable() -> pathlib.Path:
@@ -31,3 +33,16 @@ def get_pkg_config_path() -> Sequence[str]:
         for entry in entrypoints
     ]
 
+
+def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.Popen:
+    """Run the pkgconf executable.
+
+    :param args: Arguments to pass to the pkgconf call.
+    :param subprocess_kwargs: Keyword arguments to pass to the subprocess.run call.
+    """
+    env = os.environ.copy()
+    env['PKG_CONFIG_PATH'] = os.pathsep.join((
+        env.get('PKG_CONFIG_PATH', ''),
+        *get_pkg_config_path(),
+    ))
+    return subprocess.run([get_executable(), *args], **subprocess_kwargs)
