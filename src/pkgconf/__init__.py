@@ -2,6 +2,7 @@ import importlib.metadata
 import importlib.resources
 import os
 import pathlib
+import sys
 import subprocess
 
 from collections.abc import Sequence
@@ -46,3 +47,7 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.Popen:
         *get_pkg_config_path(),
     ))
     return subprocess.run([get_executable(), *args], **subprocess_kwargs)
+
+
+def _entrypoint() -> None:
+    run_pkgconf(*sys.argv[1:])

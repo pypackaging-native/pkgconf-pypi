@@ -35,6 +35,10 @@ test =[
   'environment-helpers >= 0.1.1',
 ]
 
+[project.scripts]
+pkgconf = 'pkgconf:_entrypoint'
+pkg-config = 'pkgconf:_entrypoint'
+
 [tool.meson-python.args]
 install = ['--tags=python-runtime']
 
