@@ -1,10 +1,14 @@
 import pathlib
+import sys
 
 import environment_helpers
 import environment_helpers.build
 import pytest
 
+
 root = pathlib.Path(__file__).parent.parent
+
+sys.path.insert(0, str(root / 'src'))
 
 
 @pytest.fixture
