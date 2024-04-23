@@ -4,6 +4,7 @@ import os
 import pathlib
 import shutil
 import sys
+import sysconfig
 import subprocess
 
 from collections.abc import Sequence
@@ -62,6 +63,11 @@ def _entrypoint() -> None:
         # to stdout/stderr, meaning we will have the output of both process
         # calls. While a bit unexpected, I believe this is the best option for
         # debugging.
-        system_executable = shutil.which('pkgconf') or shutil.which('pkg-config')
+        scripts = sysconfig.get_path('scripts')
+        path_list = os.environ.get('PATH', os.defpath).split(os.pathsep)
+        if scripts in path_list:
+            path_list.remove(scripts)
+        path = os.pathsep.join(path_list)
+        system_executable = shutil.which('pkgconf', path=path) or shutil.which('pkg-config', path=path)
         if system_executable:
             subprocess.run([system_executable, *args])
