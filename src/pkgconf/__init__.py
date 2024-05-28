@@ -1,5 +1,7 @@
+import importlib
 import importlib.metadata
 import importlib.resources
+import itertools
 import os
 import pathlib
 import shutil
@@ -20,6 +22,13 @@ def get_executable() -> pathlib.Path:
     return pathlib.Path(importlib.resources.files('pkgconf') / '.bin' / executable_name)
 
 
+def _get_module_paths(name: str) -> list[str]:
+    module = importlib.import_module(name)
+    if 'NamespacePath' in module.__path__.__class__.__name__:
+        return list(module.__path__)
+    return [os.fspath(importlib.resources.files(name))]
+
+
 def get_pkg_config_path() -> Sequence[str]:
     """Calculate PKG_CONFIG_PATH for Python packages in the current environment.
 
@@ -31,10 +40,9 @@ def get_pkg_config_path() -> Sequence[str]:
     entrypoint-name = 'project.package'
     """
     entrypoints = importlib.metadata.entry_points(group='pkg-config')
-    return [
-        os.fspath(importlib.resources.files(entry.value))
-        for entry in entrypoints
-    ]
+    return itertools.chain.from_iterable([
+        _get_module_paths(entry.value) for entry in entrypoints
+    ])
 
 
 def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.Popen:
