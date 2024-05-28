@@ -29,6 +29,11 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
+docs = [
+  'sphinx ~= 7.0',
+  'furo',
+  'sphinx-design',
+]
 test =[
   'pytest',
   'meson-python',
