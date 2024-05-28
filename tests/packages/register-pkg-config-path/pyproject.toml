@@ -6,5 +6,5 @@ requires = ['meson-python']
 name = 'example'
 version = '1.0.0'
 
-[project.entry-points.pkg-config]
+[project.entry-points.pkg_config]
 example = 'example.pkgconf'

@@ -39,7 +39,7 @@ def get_pkg_config_path() -> Sequence[str]:
     [project.entry-points.pkg-config]
     entrypoint-name = 'project.package'
     """
-    entrypoints = importlib.metadata.entry_points(group='pkg-config')
+    entrypoints = importlib.metadata.entry_points(group='pkg_config')
     return itertools.chain.from_iterable([
         _get_module_paths(entry.value) for entry in entrypoints
     ])
