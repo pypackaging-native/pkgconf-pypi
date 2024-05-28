@@ -13,6 +13,9 @@ from collections.abc import Sequence
 from typing import Any
 
 
+__version__ = '2.1.1'
+
+
 def get_executable() -> pathlib.Path:
     """Get the pkgconf executable."""
     if os.name == 'posix':
