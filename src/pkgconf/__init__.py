@@ -56,7 +56,7 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.Popen:
         env.get('PKG_CONFIG_PATH', ''),
         *get_pkg_config_path(),
     ))
-    return subprocess.run([get_executable(), *args], **subprocess_kwargs)
+    return subprocess.run([get_executable(), *args], env=env, **subprocess_kwargs)
 
 
 def _entrypoint() -> None:
