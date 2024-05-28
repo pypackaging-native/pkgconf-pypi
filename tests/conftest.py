@@ -16,6 +16,16 @@ def packages():
     return root / "tests" / "packages"
 
 
+@pytest.fixture
+def data():
+    return root / 'tests' / 'data'
+
+
+@pytest.fixture
+def examples():
+    return root / 'examples'
+
+
 @pytest.fixture(scope="session")
 def self_wheel(tmp_path_factory):
     tmpdir = tmp_path_factory.mktemp("wheel")
