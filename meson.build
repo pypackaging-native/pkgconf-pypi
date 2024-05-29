@@ -10,12 +10,16 @@ project('pkgconf-pypi',
 )
 
 py = import('python').find_installation(pure: false)
-python_bin_dir = py.get_install_dir() / 'pkgconf' / '.bin'
+python_bin_dir = py.get_install_dir(pure: true) / 'pkgconf' / '.bin'  # FIXME: This is not pure.
 
-py.install_sources([
-  'src/pkgconf/__init__.py',
-  'src/pkgconf/diagnose.py',
-], subdir: 'pkgconf')
+py.install_sources(
+  [
+    'src/pkgconf/__init__.py',
+    'src/pkgconf/diagnose.py',
+  ],
+  subdir: 'pkgconf',
+  pure: true,
+)
 
 # In pyproject.toml we only select the `runtime-python` tag to install,
 # which contains the doesn't contain anything from the upstream pkgconf.
@@ -29,6 +33,16 @@ executable(
   objects: pkgconf_exe.extract_all_objects(),
   link_with: upstream.get_variable('libpkgconf'),
   install_dir: python_bin_dir,
+  install_tag: 'python-runtime',
+  install: true,
+)
+
+# FIXME: This is needed to make meson-python give us a platform-dependent but
+#        Python-independent wheel.
+executable(
+  '_pkgconf-original',
+  objects: pkgconf_exe.extract_all_objects(),
+  link_with: upstream.get_variable('libpkgconf'),
   install_tag: 'python-runtime',
   install: true,
 )
