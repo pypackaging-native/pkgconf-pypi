@@ -20,6 +20,11 @@ jobs:
           - windows-latest
           - macos-13
           - macos-14
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pkgconf
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,9 +39,13 @@ jobs:
       - run: python -m pip install cibuildwheel
         env:
           CIBW_ARCHS_LINUX: auto aarch64 arm ppc64le riscv64 s390x
-      - run: python -m cibuildwheel --output-dir wheelhouse
+      - run: python -m cibuildwheel --output-dir dist
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}-${{ strategy.job-index }}
-          path: ./wheelhouse/*.whl
+          path: dist/*.whl
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        with:
+          print-hash: true
 
