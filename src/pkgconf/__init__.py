@@ -5,9 +5,9 @@ import itertools
 import os
 import pathlib
 import shutil
+import subprocess
 import sys
 import sysconfig
-import subprocess
 
 from collections.abc import Sequence
 from typing import Any
