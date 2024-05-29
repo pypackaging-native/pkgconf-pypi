@@ -17,6 +17,7 @@ readme = 'README.md'
 license = {file = 'LICENSE'}
 authors = [
   {name = 'Ralf Gommers', email = 'ralf.gommers@gmail.com'},
+  {name = 'Filipe Laíns', email = 'lains@riseup.net'},
 ]
 classifiers = [
     'Development Status :: 4 - Beta',
@@ -30,6 +31,9 @@ classifiers = [
     'Operating System :: Unix',
     'Operating System :: MacOS',
 ]
+urls.homepage = 'https://pkgconf-pypi.readthedocs.io/en/latest/'
+urls.issues = 'https://github.com/pypackaging-native/pkgconf-pypi/issues'
+urls.source = 'https://github.com/pypackaging-native/pkgconf-pypi'
 
 [project.optional-dependencies]
 docs = [
