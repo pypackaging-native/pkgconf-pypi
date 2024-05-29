@@ -14,8 +14,8 @@ def get_requires_for_build_wheel(config_settings = None):
     return mesonpy.get_requires_for_build_wheel(config_settings)
 
 
-def build_sdist(sdist_directory, config_settings = None, metadata_directory = None):
-    return mesonpy.build_sdist(sdist_directory, config_settings, metadata_directory)
+def build_sdist(sdist_directory, config_settings = None):
+    return mesonpy.build_sdist(sdist_directory, config_settings)
 
 
 def build_wheel(wheel_directory, config_settings = None, metadata_directory = None):
