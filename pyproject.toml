@@ -30,7 +30,7 @@ description = '`pkgconf` is a program which helps with discovering library depen
 license = {file = 'LICENSE'}
 name = 'pkgconf'
 readme = 'README.md'
-version = '2.1.1-2'
+version = '2.1.1-3'
 
 [project.optional-dependencies]
 docs = [
