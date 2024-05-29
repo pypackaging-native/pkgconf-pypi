@@ -8,4 +8,4 @@ py.install_sources('example/pkgconf/__init__.py', subdir: 'example/pkgconf')
 
 pkg = import('pkgconfig')
 # https://github.com/mesonbuild/meson-python/issues/609
-#pkg.generate(lib, install_dir: py.get_install_dir(pure: true) / 'example' / 'pkgconf')
+# pkg.generate(lib, install_dir: py.get_install_dir(pure: true) / 'example' / 'pkgconf')
