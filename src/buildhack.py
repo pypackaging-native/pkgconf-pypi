@@ -1,5 +1,4 @@
 import pathlib
-import sysconfig
 import textwrap
 
 import mesonpy
@@ -26,7 +25,6 @@ def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
     name_parts = wheel_path.stem.split('-')
     name_parts[2] = 'py3'
     name_parts[3] = 'none'
-    assert name_parts[4] == sysconfig.get_platform().replace('-', '_')
     new_name = '-'.join(name_parts) + '.whl'
     assert new_name != wheel_path.name
     new_wheel_path = workdir / new_name
