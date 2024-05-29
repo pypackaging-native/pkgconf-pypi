@@ -13,7 +13,7 @@ from collections.abc import Sequence
 from typing import Any
 
 
-__version__ = '2.1.1-2'
+__version__ = '2.1.1-3'
 
 
 def get_executable() -> pathlib.Path:
