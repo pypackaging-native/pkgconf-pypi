@@ -2,7 +2,7 @@ import pkgconf
 
 
 project = 'pkgconf-pypi'
-copyright = '2024, The pkgcon and pkgconf-pypi authors'
+copyright = '2024, The pkgconf and pypackaging-native contributors'
 author = 'Filipe Laíns, Ralf Gommers'
 
 version = release = pkgconf.__version__
