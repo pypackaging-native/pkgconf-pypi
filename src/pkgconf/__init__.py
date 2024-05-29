@@ -43,9 +43,7 @@ def get_pkg_config_path() -> Sequence[str]:
     entrypoint-name = 'project.package'
     """
     entrypoints = importlib.metadata.entry_points(group='pkg_config')
-    return itertools.chain.from_iterable([
-        _get_module_paths(entry.value) for entry in entrypoints
-    ])
+    return itertools.chain.from_iterable([_get_module_paths(entry.value) for entry in entrypoints])
 
 
 def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.Popen:
@@ -55,10 +53,12 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.Popen:
     :param subprocess_kwargs: Keyword arguments to pass to the subprocess.run call.
     """
     env = os.environ.copy()
-    env['PKG_CONFIG_PATH'] = os.pathsep.join((
-        env.get('PKG_CONFIG_PATH', ''),
-        *get_pkg_config_path(),
-    ))
+    env['PKG_CONFIG_PATH'] = os.pathsep.join(
+        (
+            env.get('PKG_CONFIG_PATH', ''),
+            *get_pkg_config_path(),
+        )
+    )
     return subprocess.run([get_executable(), *args], env=env, **subprocess_kwargs)
 
 

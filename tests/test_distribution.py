@@ -10,8 +10,5 @@ def test_single_pkgconfig_in_wheel_contents(self_wheel):
         raise NotImplementedError
 
     wheel = zipfile.ZipFile(self_wheel)
-    pkgconf_entries = [
-        entry for entry in wheel.namelist()
-        if entry.split('/')[-1] == executable_name
-    ]
+    pkgconf_entries = [entry for entry in wheel.namelist() if entry.split('/')[-1] == executable_name]
     assert len(pkgconf_entries) == 1

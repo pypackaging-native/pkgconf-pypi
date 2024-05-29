@@ -13,4 +13,3 @@ The intent is to:
 - configure the build with no system directory
 - install `pkg-config` as an alias in the scripts directory of the Python
   environment
-

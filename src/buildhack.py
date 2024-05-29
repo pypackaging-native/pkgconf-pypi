@@ -6,19 +6,19 @@ import mesonpy
 import wheel.wheelfile
 
 
-def get_requires_for_build_sdist(config_settings = None):
+def get_requires_for_build_sdist(config_settings=None):
     return mesonpy.get_requires_for_build_sdist(config_settings)
 
 
-def get_requires_for_build_wheel(config_settings = None):
+def get_requires_for_build_wheel(config_settings=None):
     return mesonpy.get_requires_for_build_wheel(config_settings)
 
 
-def build_sdist(sdist_directory, config_settings = None):
+def build_sdist(sdist_directory, config_settings=None):
     return mesonpy.build_sdist(sdist_directory, config_settings)
 
 
-def build_wheel(wheel_directory, config_settings = None, metadata_directory = None):
+def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
     workdir = pathlib.Path(wheel_directory)
 
     wheel_path = workdir / mesonpy.build_wheel(wheel_directory, config_settings, metadata_directory)
@@ -37,12 +37,17 @@ def build_wheel(wheel_directory, config_settings = None, metadata_directory = No
     ):
         for item in original_wheel.infolist():
             if item.filename.endswith('.dist-info/WHEEL'):
-                new_wheel.writestr(item, textwrap.dedent("""
+                new_wheel.writestr(
+                    item,
+                    textwrap.dedent("""
                     Wheel-Version: 1.0
                     Generator: meson
                     Root-Is-Purelib: false
                     Tag: py3-none-linux_x86_64
-                """).strip().encode())
+                """)
+                    .strip()
+                    .encode(),
+                )
             elif item.filename.endswith('.dist-info/RECORD'):
                 pass  # WheelFile does this automatically for us :)
             else:

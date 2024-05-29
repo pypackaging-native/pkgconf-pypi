@@ -9,7 +9,7 @@ def report() -> None:
     print(f'pkgconf executable: {pkgconf.get_executable()}')
 
     entrypoints = importlib.metadata.entry_points(group='pkg-config')
-    print(f'entrypoints:')
+    print('entrypoints:')
     for entry in entrypoints:
         print(f'  {entry.name}:')
         print(f'    value: {entry.value}')
@@ -23,4 +23,3 @@ if __name__ == '__main__':
         report()
     except (KeyboardInterrupt, BrokenPipeError):
         pass
-

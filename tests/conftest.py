@@ -13,7 +13,7 @@ sys.path.insert(0, str(root / 'src'))
 
 @pytest.fixture
 def packages():
-    return root / "tests" / "packages"
+    return root / 'tests' / 'packages'
 
 
 @pytest.fixture
@@ -26,9 +26,9 @@ def examples():
     return root / 'examples'
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def self_wheel(tmp_path_factory):
-    tmpdir = tmp_path_factory.mktemp("wheel")
+    tmpdir = tmp_path_factory.mktemp('wheel')
     return environment_helpers.build.build_wheel(root, tmpdir)
 
 

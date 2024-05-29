@@ -3,97 +3,100 @@
 # SPDX-License-Identifier: MIT
 
 [build-system]
-#build-backend = 'mesonpy'
-#requires = ['meson-python']
-build-backend = 'buildhack'
 backend-path = ['src']
+# build-backend = 'mesonpy'
+# requires = ['meson-python']
+build-backend = 'buildhack'
 requires = ['meson-python', 'wheel']
 
 [project]
-name = 'pkgconf'
-version = '2.1.1-0'
-description = '`pkgconf` is a program which helps with discovering library dependencies and configuring compiler and linker flags.'
-readme = 'README.md'
-license = {file = 'LICENSE'}
 authors = [
   {name = 'Ralf Gommers', email = 'ralf.gommers@gmail.com'},
-  {name = 'Filipe Laíns', email = 'lains@riseup.net'},
+  {name = 'Filipe Laíns', email = 'lains@riseup.net'}
 ]
 classifiers = [
-    'Development Status :: 4 - Beta',
-    'Intended Audience :: Developers',
-    'License :: OSI Approved :: MIT License',
-    'License :: OSI Approved :: ISC License (ISCL)',
-    'Programming Language :: C',
-    'Topic :: Software Development',
-    'Operating System :: Microsoft :: Windows',
-    'Operating System :: POSIX',
-    'Operating System :: Unix',
-    'Operating System :: MacOS',
+  'Development Status :: 4 - Beta',
+  'Intended Audience :: Developers',
+  'License :: OSI Approved :: MIT License',
+  'License :: OSI Approved :: ISC License (ISCL)',
+  'Programming Language :: C',
+  'Topic :: Software Development',
+  'Operating System :: Microsoft :: Windows',
+  'Operating System :: POSIX',
+  'Operating System :: Unix',
+  'Operating System :: MacOS'
 ]
-urls.homepage = 'https://pkgconf-pypi.readthedocs.io/en/latest/'
-urls.issues = 'https://github.com/pypackaging-native/pkgconf-pypi/issues'
-urls.source = 'https://github.com/pypackaging-native/pkgconf-pypi'
+description = '`pkgconf` is a program which helps with discovering library dependencies and configuring compiler and linker flags.'
+license = {file = 'LICENSE'}
+name = 'pkgconf'
+readme = 'README.md'
+version = '2.1.1-0'
 
 [project.optional-dependencies]
 docs = [
   'sphinx ~= 7.0',
   'furo',
-  'sphinx-design',
+  'sphinx-design'
 ]
-test =[
+test = [
   'pytest',
   'meson-python',
   'environment-helpers >= 0.1.1.post1',
-  'pytest-mock >= 2',
+  'pytest-mock >= 2'
 ]
 
 [project.scripts]
-pkgconf = 'pkgconf:_entrypoint'
 pkg-config = 'pkgconf:_entrypoint'
+pkgconf = 'pkgconf:_entrypoint'
 
-[tool.meson-python.args]
-setup = ['--prefix=/build']
-install = ['--tags=python-runtime']
-
+[project.urls]
+homepage = 'https://pkgconf-pypi.readthedocs.io/en/latest/'
+issues = 'https://github.com/pypackaging-native/pkgconf-pypi/issues'
+source = 'https://github.com/pypackaging-native/pkgconf-pypi'
 
 [tool.cibuildwheel]
 # Build is Python-independent, so we select a single Python version (doesn't
 # matter which one) to ensure we get one build per platform
-build = "cp311-*"
-
-[tool.cibuildwheel.windows]
-config-settings = "setup-args=--vsenv build-dir=build"
+build = 'cp311-*'
 
 [tool.cibuildwheel.macos.environment]
-MACOSX_DEPLOYMENT_TARGET = "10.9"
+MACOSX_DEPLOYMENT_TARGET = '10.9'
+
+[tool.cibuildwheel.windows]
+config-settings = 'setup-args=--vsenv build-dir=build'
+
+[tool.meson-python.args]
+install = ['--tags=python-runtime']
+setup = ['--prefix=/build']
+
+[tool.mypy]
+files = 'src'
+python_version = '3.8'
+show_error_codes = true
+strict = true
 
 [tool.ruff]
-src = ['src']
-exclude = [
-  'tests/packages/*/pyproject.toml',
-  'tests/packages/test-bad-syntax',
-]
 line-length = 127
+src = ['src']
 
 [tool.ruff.format]
 quote-style = 'single'
 
 [tool.ruff.lint]
 extend-select = [
-  'B',    # flake8-bugbear
-  'C4',   # flake8-comprehensions
-  'C9',   # mccabe
-  'I',    # isort
+  'B',  # flake8-bugbear
+  'C4',  # flake8-comprehensions
+  'C9',  # mccabe
+  'I',  # isort
   'PGH',  # pygrep-hooks
   'RUF',  # ruff
-  'UP',   # pyupgrade
-  'W',    # pycodestyle
+  'UP',  # pyupgrade
+  'W',  # pycodestyle
   'YTT',  # flake8-2020
   'TRY',  # tryceratops
-  'EM',   # flake8-errmsg
+  'EM'  # flake8-errmsg
 ]
 
 [tool.ruff.lint.isort]
-lines-between-types = 1
 lines-after-imports = 2
+lines-between-types = 1
