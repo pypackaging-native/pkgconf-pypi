@@ -3,8 +3,11 @@
 # SPDX-License-Identifier: MIT
 
 [build-system]
-build-backend = 'mesonpy'
-requires = ['meson-python']
+#build-backend = 'mesonpy'
+#requires = ['meson-python']
+build-backend = 'buildhack'
+backend-path = ['src']
+requires = ['meson-python', 'wheel']
 
 [project]
 name = 'pkgconf'
