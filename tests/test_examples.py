@@ -10,7 +10,7 @@ def test_header_only_library(env, tmp_path, examples, data):
 
     pkgconf = os.path.join(env.scheme['scripts'], 'pkgconf')
     cflags = subprocess.check_output([pkgconf, '--cflags', 'example']).decode().split()
-    subprocess.check_call(['cc', '-o', bin, src, *cflags])
+    subprocess.check_call(['gcc', '-o', bin, src, *cflags])
     out = subprocess.check_output([bin])
 
     assert out == b'bar'
