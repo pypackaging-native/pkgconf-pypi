@@ -1,4 +1,5 @@
 import os
+import pathlib
 import subprocess
 
 
@@ -15,8 +16,8 @@ def test_pkg_config_path(env, packages):
 
     env.install_from_path(packages / 'register-pkg-config-path', from_sdist=False)
 
-    path = list(env.introspectable.call('pkgconf.get_pkg_config_path'))
-    assert list(path) == [os.path.join(env.scheme['purelib'], 'example', 'pkgconf')]
+    path = list(map(pathlib.Path, env.introspectable.call('pkgconf.get_pkg_config_path')))
+    assert path == [pathlib.Path(env.scheme['purelib'], 'example', 'pkgconf')]
 
 
 def test_pkg_config_path_namespace(env, packages):
@@ -25,8 +26,8 @@ def test_pkg_config_path_namespace(env, packages):
 
     env.install_from_path(packages / 'namespace', from_sdist=False)
 
-    path = list(env.introspectable.call('pkgconf.get_pkg_config_path'))
-    assert list(path) == [os.path.join(env.scheme['purelib'], 'example')]
+    path = list(map(pathlib.Path, env.introspectable.call('pkgconf.get_pkg_config_path')))
+    assert path == [pathlib.Path(env.scheme['purelib'], 'example')]
 
 
 def test_run_pkgconfig(env):
