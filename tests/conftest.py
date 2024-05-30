@@ -6,30 +6,35 @@ import environment_helpers.build
 import pytest
 
 
-root = pathlib.Path(__file__).parent.parent
+ROOT = pathlib.Path(__file__).parent.parent
 
-sys.path.insert(0, str(root / 'src'))
+sys.path.insert(0, str(ROOT / 'src'))
+
+
+@pytest.fixture
+def root():
+    return ROOT
 
 
 @pytest.fixture
 def packages():
-    return root / 'tests' / 'packages'
+    return ROOT / 'tests' / 'packages'
 
 
 @pytest.fixture
 def data():
-    return root / 'tests' / 'data'
+    return ROOT / 'tests' / 'data'
 
 
 @pytest.fixture
 def examples():
-    return root / 'examples'
+    return ROOT / 'examples'
 
 
 @pytest.fixture(scope='session')
 def self_wheel(tmp_path_factory):
     tmpdir = tmp_path_factory.mktemp('wheel')
-    return environment_helpers.build.build_wheel(root, tmpdir)
+    return environment_helpers.build.build_wheel(ROOT, tmpdir)
 
 
 @pytest.fixture

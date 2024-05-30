@@ -1,6 +1,15 @@
 import os
 import zipfile
 
+import pytest
+
+import environment_helpers.build
+
+
+@pytest.mark.order('first')
+def test_build(root, tmp_path):
+    environment_helpers.build.build_wheel_via_sdist(root, tmp_path)
+
 
 def test_single_pkgconfig_in_wheel_contents(self_wheel):
     """pkgconf.get_executable() makes an assumption we are only installing one file named 'pkgconf'"""
