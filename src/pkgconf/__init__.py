@@ -20,6 +20,8 @@ def get_executable() -> pathlib.Path:
     """Get the pkgconf executable."""
     if os.name == 'posix':
         executable_name = 'pkgconf'
+    elif os.name == 'nt':
+        executable_name = 'pkgconf.EXE'
     else:
         raise NotImplementedError
     return pathlib.Path(importlib.resources.files('pkgconf') / '.bin' / executable_name)
