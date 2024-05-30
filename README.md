@@ -1,5 +1,13 @@
 # pkgconf-pypi
 
+[![CI test](https://github.com/pypackaging-native/pkgconf-pypi/actions/workflows/test.yml/badge.svg)](https://github.com/pypackaging-native/pkgconf-pypi/actions/workflows/test.yml)
+[![CI build](https://github.com/pypackaging-native/pkgconf-pypi/actions/workflows/build.yml/badge.svg)](https://github.com/pypackaging-native/pkgconf-pypi/actions/workflows/build.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/pypackaging-native/pkgconf-pypi/main.svg)](https://results.pre-commit.ci/latest/github/pypackaging-native/pkgconf-pypi/main)
+
+[![Documentation Status](https://readthedocs.org/projects/pkgconf-pypi/badge/?version=latest)](https://pkgconf-pypi.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/pkgconf.svg)](https://pypi.org/project/pkgconf/)
+[![Discord](https://img.shields.io/discord/803025117553754132?label=Discord%20chat%20pkgconf-pypi)](https://discord.gg/pypa)
+
 This goal of this repo is to facility building and publishing of
 [pkgconf](https://github.com/pkgconf/pkgconf) binaries on PyPI, primarily for
 ease of installing in a cross-platform manner. This is useful when `pkgconf` is
