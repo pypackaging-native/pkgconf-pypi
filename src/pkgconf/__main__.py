@@ -4,6 +4,8 @@ import subprocess
 import sys
 import warnings
 
+from typing import TextIO
+
 import pkgconf
 
 
@@ -49,15 +51,28 @@ def _use_colors() -> bool:
 def _setup_cli():
     if _use_colors():
         dim = '\33[2m'
+        yellow = '\33[93m'
         reset = '\33[0m'
     else:
-        dim = reset = ''
+        dim = yellow = reset = ''
 
     logging.basicConfig(
         stream=sys.stderr,
         format=f'{dim}> %(message)s{reset}',
         level=logging.INFO,
     )
+
+    def _showwarning(
+        message: Warning | str,
+        category: type[Warning],
+        filename: str,
+        lineno: int,
+        file: TextIO | None = None,
+        line: str | None = None,
+    ) -> None:  # pragma: no cover
+        print(f'{yellow}WARNING{reset} {message}', file=sys.stderr)
+
+    warnings.showwarning = _showwarning
 
 
 def _entrypoint():
