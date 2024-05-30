@@ -36,12 +36,14 @@ jobs:
           - windows-latest
           - macos-13
           - macos-14
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
       - uses: pypa/cibuildwheel@v2.18.1
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: wheels-${{ matrix.os }}
           path: wheelhouse/*.whl
@@ -58,6 +60,7 @@ jobs:
         env:
           CIBW_ARCHS_LINUX: aarch64 ppc64le s390x
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: wheels-cross-${{ matrix.os }}
           path: wheelhouse/*.whl
