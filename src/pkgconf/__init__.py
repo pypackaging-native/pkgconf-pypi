@@ -2,6 +2,7 @@ import importlib
 import importlib.metadata
 import importlib.resources
 import itertools
+import logging
 import os
 import pathlib
 import subprocess
@@ -11,6 +12,9 @@ from typing import Any
 
 
 __version__ = '2.1.1-7'
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def get_executable() -> pathlib.Path:
@@ -58,4 +62,7 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.Popen:
             *get_pkg_config_path(),
         )
     )
-    return subprocess.run([get_executable(), *args], env=env, **subprocess_kwargs)
+    cmd = [os.fspath(get_executable()), *args]
+    _LOGGER.info('Running the Python pkgconf')
+    _LOGGER.info('$ PKG_CONFIG_PATH=' + env['PKG_CONFIG_PATH'] + ' ' + ' '.join(cmd))
+    return subprocess.run(cmd, env=env, **subprocess_kwargs)

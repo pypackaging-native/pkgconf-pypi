@@ -47,8 +47,8 @@ docs = [
 ]
 
 [project.scripts]
-pkg-config = 'pkgconf.__main__:main'
-pkgconf = 'pkgconf.__main__:main'
+pkg-config = 'pkgconf.__main__:_entrypoint'
+pkgconf = 'pkgconf.__main__:_entrypoint'
 
 [project.urls]
 homepage = 'https://pkgconf-pypi.readthedocs.io/en/latest/'
