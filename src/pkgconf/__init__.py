@@ -5,7 +5,10 @@ import itertools
 import logging
 import os
 import pathlib
+import shutil
 import subprocess
+import sysconfig
+import warnings
 
 from collections.abc import Sequence
 from typing import Any
@@ -17,6 +20,19 @@ __version__ = '2.1.1-7'
 _LOGGER = logging.getLogger(__name__)
 
 
+def _get_system_executable() -> pathlib.Path | None:
+    scripts = sysconfig.get_path('scripts')
+    path_list = os.environ.get('PATH', os.defpath).split(os.pathsep)
+    if scripts in path_list:
+        path_list.remove(scripts)
+    path = os.pathsep.join(path_list)
+
+    executable = shutil.which('pkgconf', path=path) or shutil.which('pkg-config', path=path)
+    if executable:
+        return pathlib.Path(executable)
+    return None
+
+
 def get_executable() -> pathlib.Path:
     """Get the pkgconf executable."""
     if os.name == 'posix':
@@ -25,7 +41,18 @@ def get_executable() -> pathlib.Path:
         executable_name = 'pkgconf.EXE'
     else:
         raise NotImplementedError
-    return pathlib.Path(importlib.resources.files('pkgconf') / '.bin' / executable_name)
+
+    executable = pathlib.Path(importlib.resources.files('pkgconf') / '.bin' / executable_name)
+    if executable.exists():
+        return executable
+
+    warnings.warn('Bundled pkgconf not found, using the system executable', stacklevel=2)
+    executable = _get_system_executable()
+    if executable:
+        return executable
+
+    msg = 'No pkgconf/pkg-config executable available'
+    raise RuntimeError(msg)
 
 
 def _get_module_paths(name: str) -> list[str]:
