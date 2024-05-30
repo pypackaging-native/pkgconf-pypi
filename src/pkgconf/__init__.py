@@ -14,7 +14,7 @@ from collections.abc import Sequence
 from typing import Any
 
 
-__version__ = '2.1.1-7'
+__version__ = '2.1.1-8'
 
 
 _LOGGER = logging.getLogger(__name__)

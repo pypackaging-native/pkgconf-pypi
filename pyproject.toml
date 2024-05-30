@@ -11,7 +11,7 @@ requires = ['meson-python', 'wheel']
 
 [project]
 name = 'pkgconf'
-version = '2.1.1-7'
+version = '2.1.1-8'
 description = '`pkgconf` is a program which helps with discovering library dependencies and configuring compiler and linker flags.'
 readme = 'README.md'
 license = {file = 'LICENSE'}
