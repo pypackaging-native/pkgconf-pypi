@@ -1,9 +1,7 @@
 import logging
 import os
-import shutil
 import subprocess
 import sys
-import sysconfig
 import warnings
 
 import pkgconf
@@ -24,15 +22,10 @@ def main() -> None:
         # to stdout/stderr, meaning we will have the output of both process
         # calls. While a bit unexpected, I believe this is the best option for
         # debugging.
-        scripts = sysconfig.get_path('scripts')
-        path_list = os.environ.get('PATH', os.defpath).split(os.pathsep)
-        if scripts in path_list:
-            path_list.remove(scripts)
-        path = os.pathsep.join(path_list)
-        system_executable = shutil.which('pkgconf', path=path) or shutil.which('pkg-config', path=path)
+        system_executable = pkgconf._get_system_executable()
         if system_executable:
-            cmd = [system_executable, *args]
-            _LOGGER.info(f'Running the system {os.path.basename(system_executable)}')
+            cmd = [os.fspath(system_executable), *args]
+            _LOGGER.info(f'Running the system {system_executable.name}')
             _LOGGER.info('$ ' + ' '.join(cmd))
             subprocess.run(cmd)
 
