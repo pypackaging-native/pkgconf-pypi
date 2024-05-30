@@ -6,6 +6,8 @@ def test_single_pkgconfig_in_wheel_contents(self_wheel):
     """pkgconf.get_executable() makes an assumption we are only installing one file named 'pkgconf'"""
     if os.name == 'posix':
         executable_name = 'pkgconf'
+    elif os.name == 'nt':
+        executable_name = 'pkgconf.EXE'
     else:
         raise NotImplementedError
 
