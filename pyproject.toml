@@ -35,10 +35,11 @@ classifiers = [
 [project.optional-dependencies]
 test = [
   'pytest',
-  'meson-python',
-  'environment-helpers >= 0.1.1.post1',
   'pytest-mock >= 2',
   'pytest-order >= 1',
+  'pytest-github-actions-annotate-failures',
+  'meson-python',
+  'environment-helpers >= 0.1.1.post1',
 ]
 docs = [
   'sphinx ~= 7.0',
