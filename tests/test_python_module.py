@@ -2,6 +2,8 @@ import os
 import pathlib
 import subprocess
 
+import pytest
+
 
 def test_valid_executable(env):
     executable = env.introspectable.call('pkgconf.get_executable')
@@ -10,6 +12,7 @@ def test_valid_executable(env):
     assert help_text.startswith('usage: pkgconf')
 
 
+@pytest.mark.skipif(os.name == 'nt', reason='meson-python does not support bundling libraries in wheel on win32')
 def test_pkg_config_path(env, packages):
     path = list(env.introspectable.call('pkgconf.get_pkg_config_path'))
     assert len(path) == 0
