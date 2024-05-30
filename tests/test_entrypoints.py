@@ -29,3 +29,8 @@ def test_fallback(mocker, monkeypatch):
     pkgconf._entrypoint()
 
     subprocess.run.assert_called_with(['(pkgconf-path)', *args])
+
+
+def test_main(env):
+    output = env.run_interpreter('-m', 'pkgconf', '--help')
+    assert output.decode().startswith('usage: pkgconf')
