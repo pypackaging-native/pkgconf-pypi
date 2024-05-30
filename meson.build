@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 project('pkgconf-pypi',
-  version : '2.1.1-5',
+  version : '2.1.1-6',
   license : 'MIT AND ISC',
   license_files : ['LICENSE'],
   meson_version : '>=1.3.2',
