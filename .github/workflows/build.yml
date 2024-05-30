@@ -13,11 +13,6 @@ env:
 jobs:
   sdist:
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/pkgconf
-    permissions:
-      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -41,11 +36,6 @@ jobs:
           - windows-latest
           - macos-13
           - macos-14
-    environment:
-      name: pypi
-      url: https://pypi.org/p/pkgconf
-    permissions:
-      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
