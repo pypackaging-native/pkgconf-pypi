@@ -6,6 +6,7 @@ import sys
 import pytest
 
 import pkgconf
+import pkgconf.__main__
 
 
 @pytest.mark.parametrize('name', ['pkgconf', 'pkg-config'])
@@ -26,7 +27,7 @@ def test_fallback(mocker, monkeypatch):
     args = ['--libs', 'py-test-inexistent']
     monkeypatch.setattr(sys, 'argv', ['(argv0)', *args])
 
-    pkgconf._entrypoint()
+    pkgconf.__main__.main()
 
     subprocess.run.assert_called_with(['(pkgconf-path)', *args])
 
