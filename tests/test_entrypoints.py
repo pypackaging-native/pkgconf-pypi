@@ -27,7 +27,7 @@ def test_fallback(mocker, monkeypatch):
     args = ['--libs', 'py-test-inexistent']
     monkeypatch.setattr(sys, 'argv', ['(argv0)', *args])
 
-    pkgconf.__main__.main()
+    pkgconf.__main__._entrypoint()
 
     subprocess.run.assert_called_with(['(pkgconf-path)', *args])
 

@@ -1,10 +1,15 @@
+import logging
 import os
 import shutil
 import subprocess
 import sys
 import sysconfig
+import warnings
 
 import pkgconf
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def main() -> None:
@@ -26,8 +31,46 @@ def main() -> None:
         path = os.pathsep.join(path_list)
         system_executable = shutil.which('pkgconf', path=path) or shutil.which('pkg-config', path=path)
         if system_executable:
-            subprocess.run([system_executable, *args])
+            cmd = [system_executable, *args]
+            _LOGGER.info(f'Running the system {os.path.basename(system_executable)}')
+            _LOGGER.info('$ ' + ' '.join(cmd))
+            subprocess.run(cmd)
+
+
+def _use_colors() -> bool:
+    if 'NO_COLOR' in os.environ:
+        if 'FORCE_COLOR' in os.environ:
+            warnings.warn('Both NO_COLOR and FORCE_COLOR environment variables are set, disabling color', stacklevel=2)
+        return False
+    elif 'FORCE_COLOR' in os.environ or sys.stdout.isatty():
+        if os.name == 'nt':
+            try:
+                import colorama
+            except ModuleNotFoundError:
+                return False
+            colorama.init()
+        return True
+    return False
+
+
+def _setup_cli():
+    if _use_colors():
+        dim = '\33[2m'
+        reset = '\33[0m'
+    else:
+        dim = reset = ''
+
+    logging.basicConfig(
+        stream=sys.stderr,
+        format=f'{dim}> %(message)s{reset}',
+        level=logging.INFO,
+    )
+
+
+def _entrypoint():
+    _setup_cli()
+    main()
 
 
 if __name__ == '__main__':
-    main()
+    _entrypoint()
