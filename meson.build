@@ -15,6 +15,7 @@ python_bin_dir = py.get_install_dir() / 'pkgconf' / '.bin'
 py.install_sources(
   [
     'src/pkgconf/__init__.py',
+    'src/pkgconf/__main__.py',
     'src/pkgconf/diagnose.py',
   ],
   subdir: 'pkgconf',
