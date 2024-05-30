@@ -61,6 +61,11 @@ jobs:
     needs:
       - sdist
       - wheels
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pkgconf
+    permissions:
+      id-token: write
     steps:
       - uses: actions/setup-python@v5
       - uses: actions/download-artifact@v4
