@@ -1,9 +1,8 @@
 import os
 import zipfile
 
-import pytest
-
 import environment_helpers.build
+import pytest
 
 
 @pytest.mark.order('first')

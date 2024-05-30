@@ -10,6 +10,11 @@ build-backend = 'buildhack'
 requires = ['meson-python', 'wheel']
 
 [project]
+name = 'pkgconf'
+version = '2.1.1-7'
+description = '`pkgconf` is a program which helps with discovering library dependencies and configuring compiler and linker flags.'
+readme = 'README.md'
+license = {file = 'LICENSE'}
 authors = [
   {name = 'Ralf Gommers', email = 'ralf.gommers@gmail.com'},
   {name = 'Filipe Laíns', email = 'lains@riseup.net'}
@@ -26,24 +31,19 @@ classifiers = [
   'Operating System :: Unix',
   'Operating System :: MacOS'
 ]
-description = '`pkgconf` is a program which helps with discovering library dependencies and configuring compiler and linker flags.'
-license = {file = 'LICENSE'}
-name = 'pkgconf'
-readme = 'README.md'
-version = '2.1.1-7'
 
 [project.optional-dependencies]
-docs = [
-  'sphinx ~= 7.0',
-  'furo',
-  'sphinx-design'
-]
 test = [
   'pytest',
   'meson-python',
   'environment-helpers >= 0.1.1.post1',
   'pytest-mock >= 2',
   'pytest-order >= 1',
+]
+docs = [
+  'sphinx ~= 7.0',
+  'furo',
+  'sphinx-design'
 ]
 
 [project.scripts]
@@ -55,6 +55,10 @@ homepage = 'https://pkgconf-pypi.readthedocs.io/en/latest/'
 issues = 'https://github.com/pypackaging-native/pkgconf-pypi/issues'
 source = 'https://github.com/pypackaging-native/pkgconf-pypi'
 
+[tool.meson-python.args]
+install = ['--tags=python-runtime']
+setup = ['--prefix=/build']
+
 [tool.cibuildwheel]
 # Build is Python-independent, so we select a single Python version (doesn't
 # matter which one) to ensure we get one build per platform
@@ -65,10 +69,6 @@ MACOSX_DEPLOYMENT_TARGET = '10.9'
 
 [tool.cibuildwheel.windows]
 config-settings = 'setup-args=--vsenv build-dir=build'
-
-[tool.meson-python.args]
-install = ['--tags=python-runtime']
-setup = ['--prefix=/build']
 
 [tool.mypy]
 files = 'src'
@@ -85,17 +85,17 @@ quote-style = 'single'
 
 [tool.ruff.lint]
 extend-select = [
-  'B',  # flake8-bugbear
-  'C4',  # flake8-comprehensions
-  'C9',  # mccabe
-  'I',  # isort
+  'B',    # flake8-bugbear
+  'C4',   # flake8-comprehensions
+  'C9',   # mccabe
+  'I',    # isort
   'PGH',  # pygrep-hooks
   'RUF',  # ruff
-  'UP',  # pyupgrade
-  'W',  # pycodestyle
+  'UP',   # pyupgrade
+  'W',    # pycodestyle
   'YTT',  # flake8-2020
   'TRY',  # tryceratops
-  'EM'  # flake8-errmsg
+  'EM'    # flake8-errmsg
 ]
 
 [tool.ruff.lint.isort]
