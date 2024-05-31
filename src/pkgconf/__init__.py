@@ -1,17 +1,29 @@
 import importlib
-import importlib.metadata
-import importlib.resources
 import itertools
 import logging
 import os
 import pathlib
 import shutil
 import subprocess
+import sys
 import sysconfig
 import warnings
 
-from collections.abc import Sequence
-from typing import Any
+from typing import Any, Optional
+
+
+if sys.version_info >= (3, 9):
+    from collections.abc import Sequence
+else:
+    from typing import Sequence
+
+
+if sys.version_info >= (3, 10):
+    import importlib.metadata as importlib_metadata
+    import importlib.resources as importlib_resources
+else:
+    import importlib_metadata
+    import importlib_resources
 
 
 __version__ = '2.1.1-8'
@@ -20,7 +32,7 @@ __version__ = '2.1.1-8'
 _LOGGER = logging.getLogger(__name__)
 
 
-def _get_system_executable() -> pathlib.Path | None:
+def _get_system_executable() -> Optional[pathlib.Path]:
     scripts = sysconfig.get_path('scripts')
     path_list = os.environ.get('PATH', os.defpath).split(os.pathsep)
     if scripts in path_list:
@@ -42,7 +54,7 @@ def get_executable() -> pathlib.Path:
     else:
         raise NotImplementedError
 
-    executable = pathlib.Path(importlib.resources.files('pkgconf') / '.bin' / executable_name)
+    executable = pathlib.Path(importlib_resources.files('pkgconf') / '.bin' / executable_name)
     if executable.exists():
         return executable
 
@@ -55,11 +67,11 @@ def get_executable() -> pathlib.Path:
     raise RuntimeError(msg)
 
 
-def _get_module_paths(name: str) -> list[str]:
+def _get_module_paths(name: str) -> Sequence[str]:
     module = importlib.import_module(name)
     if 'NamespacePath' in module.__path__.__class__.__name__:
         return list(module.__path__)
-    return [os.fspath(importlib.resources.files(name))]
+    return [os.fspath(importlib_resources.files(name))]
 
 
 def get_pkg_config_path() -> Sequence[str]:
@@ -72,7 +84,7 @@ def get_pkg_config_path() -> Sequence[str]:
     [project.entry-points.pkg-config]
     entrypoint-name = 'project.package'
     """
-    entrypoints = importlib.metadata.entry_points(group='pkg_config')
+    entrypoints = importlib_metadata.entry_points(group='pkg_config')
     return itertools.chain.from_iterable([_get_module_paths(entry.value) for entry in entrypoints])
 
 
