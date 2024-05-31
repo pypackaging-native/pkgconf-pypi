@@ -1,5 +1,4 @@
 import importlib.metadata
-import importlib.resources
 import os
 
 import pkgconf
@@ -13,7 +12,7 @@ def report() -> None:
     for entry in entrypoints:
         print(f'  {entry.name}:')
         print(f'    value: {entry.value}')
-        print(f'    path: {os.fspath(importlib.resources.files(entry.value))}')
+        print(f'    paths: {pkgconf._get_module_paths(entry.value)}')
 
     print(f'PKG_CONFIG_PATH: {os.pathsep.join(pkgconf.get_pkg_config_path())}')
 
