@@ -20,10 +20,8 @@ else:
 
 if sys.version_info >= (3, 10):
     import importlib.metadata as importlib_metadata
-    import importlib.resources as importlib_resources
 else:
     import importlib_metadata
-    import importlib_resources
 
 
 __version__ = '2.1.1-8'
@@ -54,9 +52,10 @@ def get_executable() -> pathlib.Path:
     else:
         raise NotImplementedError
 
-    executable = pathlib.Path(importlib_resources.files('pkgconf') / '.bin' / executable_name)
-    if executable.exists():
-        return executable
+    for path in __path__:
+        executable = pathlib.Path(path) / '.bin' / executable_name
+        if executable.exists():
+            return executable
 
     warnings.warn('Bundled pkgconf not found, using the system executable', stacklevel=2)
     executable = _get_system_executable()
@@ -69,9 +68,10 @@ def get_executable() -> pathlib.Path:
 
 def _get_module_paths(name: str) -> Sequence[str]:
     module = importlib.import_module(name)
-    if 'NamespacePath' in module.__path__.__class__.__name__:
+    if isinstance(module.__path__, list) or 'NamespacePath' in module.__path__.__class__.__name__:
         return list(module.__path__)
-    return [os.fspath(importlib_resources.files(name))]
+    assert isinstance(module.__path__, str), module.__path__
+    return [module.__path__]
 
 
 def get_pkg_config_path() -> Sequence[str]:
