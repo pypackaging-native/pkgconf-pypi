@@ -31,6 +31,9 @@ classifiers = [
   'Operating System :: Unix',
   'Operating System :: MacOS'
 ]
+dependencies = [
+  'colorama; os_name == "nt"',
+]
 
 [project.optional-dependencies]
 test = [
