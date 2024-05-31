@@ -4,7 +4,7 @@ import subprocess
 import sys
 import warnings
 
-from typing import TextIO
+from typing import Optional, TextIO, Type, Union
 
 import pkgconf
 
@@ -63,12 +63,12 @@ def _setup_cli():
     )
 
     def _showwarning(
-        message: Warning | str,
-        category: type[Warning],
+        message: Union[Warning, str],
+        category: Type[Warning],
         filename: str,
         lineno: int,
-        file: TextIO | None = None,
-        line: str | None = None,
+        file: Optional[TextIO] = None,
+        line: Optional[str] = None,
     ) -> None:  # pragma: no cover
         print(f'{yellow}WARNING{reset} {message}', file=sys.stderr)
 
