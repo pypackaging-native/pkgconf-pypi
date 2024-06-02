@@ -55,3 +55,8 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
       - id: text-unicode-replacement-char
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+    - id: pyupgrade
+      args: [--py38-plus]
