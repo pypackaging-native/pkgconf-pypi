@@ -24,7 +24,7 @@ else:
     import importlib_metadata
 
 
-__version__ = '2.1.1-8'
+__version__ = '2.1.1-9'
 
 
 _LOGGER = logging.getLogger(__name__)
