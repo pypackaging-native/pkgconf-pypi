@@ -20,7 +20,7 @@ def test_pkg_config_path(env, packages):
     env.install_from_path(packages / 'register-pkg-config-path', from_sdist=False)
 
     path = list(map(pathlib.Path, env.introspectable.call('pkgconf.get_pkg_config_path')))
-    assert path == [pathlib.Path(env.scheme['purelib'], 'example', 'pkgconf')]
+    assert path == [pathlib.Path(env.scheme['purelib'], 'register_pkg_config_path', 'pkgconf')]
 
 
 def test_pkg_config_path_namespace(env, packages):
@@ -30,7 +30,7 @@ def test_pkg_config_path_namespace(env, packages):
     env.install_from_path(packages / 'namespace', from_sdist=False)
 
     path = list(map(pathlib.Path, env.introspectable.call('pkgconf.get_pkg_config_path')))
-    assert path == [pathlib.Path(env.scheme['purelib'], 'example')]
+    assert path == [pathlib.Path(env.scheme['purelib'], 'namespace')]
 
 
 def test_run_pkgconfig(env):

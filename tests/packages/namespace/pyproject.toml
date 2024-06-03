@@ -3,11 +3,11 @@ build-backend = 'hatchling.build'
 requires = ['hatchling']
 
 [project]
-name = 'example'
+name = 'namespace'
 version = '1.0.0'
 
 [project.entry-points.pkg_config]
-example = 'example'
+namespace = 'namespace'
 
 [tool.hatch.build.targets.wheel]
-packages = ['example']
+packages = ['namespace']
