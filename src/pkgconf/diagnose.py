@@ -21,5 +21,5 @@ def report() -> None:
 if __name__ == '__main__':
     try:
         report()
-    except (KeyboardInterrupt, BrokenPipeError):
+    except (KeyboardInterrupt, BrokenPipeError):  # pragma: no cover
         pass
