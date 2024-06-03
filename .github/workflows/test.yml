@@ -2,13 +2,6 @@ name: tests
 
 on:
   pull_request:
-    paths:
-      - examples/
-      - src/
-      - tests/
-      - '**/.py'
-      - '**/meson.build'
-      - pyproject.toml
   push:
     branches:
       - main
