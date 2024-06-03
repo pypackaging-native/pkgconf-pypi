@@ -108,3 +108,20 @@ extend-select = [
 [tool.ruff.lint.isort]
 lines-after-imports = 2
 lines-between-types = 1
+
+[tool.coverage.run]
+source = [
+  'pkgconf',
+  'tests',
+]
+source_pkgs = [
+  'pkgconf',
+  'tests',
+]
+
+[tool.coverage.paths]
+build = [
+  'src',
+  '*/site-packages',
+  '*\site-packages',
+]
