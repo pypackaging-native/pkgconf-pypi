@@ -1,4 +1,3 @@
-import os
 import pathlib
 import sys
 
@@ -41,7 +40,6 @@ def self_wheel(tmp_path_factory):
 @pytest.fixture
 def env(tmpdir, self_wheel):
     """Make a virtual environment with our project installed."""
-    env = environment_helpers.create_venv(tmpdir)
-    env.run_interpreter('-m', 'ensurepip')
-    env.run_interpreter('-m', 'pip', 'install', os.fspath(self_wheel))
+    env = environment_helpers.create_venv(tmpdir, system_site_packages=True)
+    env.install_wheel(self_wheel)
     return env
