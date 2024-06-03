@@ -3,6 +3,7 @@
 [![CI test](https://github.com/pypackaging-native/pkgconf-pypi/actions/workflows/test.yml/badge.svg)](https://github.com/pypackaging-native/pkgconf-pypi/actions/workflows/test.yml)
 [![CI build](https://github.com/pypackaging-native/pkgconf-pypi/actions/workflows/build.yml/badge.svg)](https://github.com/pypackaging-native/pkgconf-pypi/actions/workflows/build.yml)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/pypackaging-native/pkgconf-pypi/main.svg)](https://results.pre-commit.ci/latest/github/pypackaging-native/pkgconf-pypi/main)
+[![codecov](https://codecov.io/gh/pypackaging-native/pkgconf-pypi/graph/badge.svg)](https://codecov.io/gh/pypackaging-native/pkgconf-pypi)
 
 [![Documentation Status](https://readthedocs.org/projects/pkgconf-pypi/badge/?version=latest)](https://pkgconf-pypi.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/pkgconf.svg)](https://pypi.org/project/pkgconf/)
