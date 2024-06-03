@@ -6,8 +6,8 @@ on:
       - examples/
       - src/
       - tests/
-      - **/.py
-      - **/meson.build
+      - '**/.py'
+      - '**/meson.build'
       - pyproject.toml
   push:
     branches:
