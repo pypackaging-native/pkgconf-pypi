@@ -125,3 +125,8 @@ build = [
   '*/site-packages',
   '*\site-packages',
 ]
+
+[tool.coverage.report]
+exclude_also = [
+  '^\s*raise NotImplementedError\b',
+]
