@@ -62,7 +62,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: wheels-cross-${{ matrix.os }}
+          name: wheels-cross
           path: wheelhouse/*.whl
   release:
     runs-on: ubuntu-latest
