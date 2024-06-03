@@ -68,10 +68,7 @@ def get_executable() -> pathlib.Path:
 
 def _get_module_paths(name: str) -> Sequence[str]:
     module = importlib.import_module(name)
-    if isinstance(module.__path__, list) or 'NamespacePath' in module.__path__.__class__.__name__:
-        return list(module.__path__)
-    assert isinstance(module.__path__, str), module.__path__
-    return [module.__path__]
+    return list(module.__path__)
 
 
 def get_pkg_config_path() -> Sequence[str]:
