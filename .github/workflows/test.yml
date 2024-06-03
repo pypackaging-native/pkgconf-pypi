@@ -42,6 +42,7 @@ jobs:
         if: always()
         env:
           PYTHON: ${{ matrix.python }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           flags: tests
           env_vars: PYTHON
