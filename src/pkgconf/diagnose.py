@@ -7,7 +7,7 @@ import pkgconf
 def report() -> None:
     print(f'pkgconf executable: {pkgconf.get_executable()}')
 
-    entrypoints = importlib.metadata.entry_points(group='pkg-config')
+    entrypoints = importlib.metadata.entry_points(group='pkg_config')
     print('entrypoints:')
     for entry in entrypoints:
         print(f'  {entry.name}:')
