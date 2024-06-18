@@ -1,3 +1,4 @@
+import operator
 import os
 import sys
 
@@ -15,7 +16,7 @@ def report() -> None:
 
     entrypoints = importlib_metadata.entry_points(group='pkg_config')
     print('entrypoints:')
-    for entry in entrypoints:
+    for entry in sorted(entrypoints, key=operator.attrgetter('name')):
         paths_str = ', '.join(pkgconf._get_module_paths(entry.value))
         print(f'  {entry.name}:')
         print(f'    value: {entry.value}')
