@@ -44,6 +44,7 @@ def test_run_pkgconfig(env):
 
 
 @pytest.mark.skipif(not RUNNING_FROM_SOURCE, reason='Not running from source')
+@pytest.mark.filterwarnings('ignore:Bundled pkgconf not found, using the system executable')
 def test_get_executable_none(mocker):
     mocker.patch('pkgconf._get_system_executable', return_value=None)
 
@@ -53,4 +54,7 @@ def test_get_executable_none(mocker):
 
 @pytest.mark.skipif(not RUNNING_FROM_SOURCE, reason='Not running from source')
 def test_get_executable_fallback_to_system(mocker):
-    assert pkgconf.get_executable() == pkgconf._get_system_executable()
+    with pytest.warns(match='Bundled pkgconf not found, using the system executable'):
+        executable = pkgconf.get_executable()
+
+    assert executable == pkgconf._get_system_executable()
