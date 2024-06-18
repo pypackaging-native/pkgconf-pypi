@@ -1,6 +1,7 @@
 import importlib
 import itertools
 import logging
+import operator
 import os
 import pathlib
 import shutil
@@ -82,7 +83,8 @@ def get_pkg_config_path() -> Sequence[str]:
     entrypoint-name = 'project.package'
     """
     entrypoints = importlib_metadata.entry_points(group='pkg_config')
-    return itertools.chain.from_iterable([_get_module_paths(entry.value) for entry in entrypoints])
+    sorted_entrypoints = sorted(entrypoints, key=operator.attrgetter('name'))
+    return itertools.chain.from_iterable([_get_module_paths(entry.value) for entry in sorted_entrypoints])
 
 
 def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.Popen:
