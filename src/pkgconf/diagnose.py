@@ -1,13 +1,19 @@
-import importlib.metadata
 import os
+import sys
 
 import pkgconf
+
+
+if sys.version_info >= (3, 10):
+    import importlib.metadata as importlib_metadata
+else:
+    import importlib_metadata
 
 
 def report() -> None:
     print(f'pkgconf executable: {pkgconf.get_executable()}')
 
-    entrypoints = importlib.metadata.entry_points(group='pkg_config')
+    entrypoints = importlib_metadata.entry_points(group='pkg_config')
     print('entrypoints:')
     for entry in entrypoints:
         paths_str = ', '.join(pkgconf._get_module_paths(entry.value))
