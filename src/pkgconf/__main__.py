@@ -14,6 +14,13 @@ _LOGGER = logging.getLogger(__name__)
 
 def main() -> None:
     args = sys.argv[1:]
+
+    # If we find that we are calling ourselves, exit immediately
+    if os.environ.get('PKGCONF_PYPI_RECURSIVE', None) == __file__:
+        _LOGGER.info('Giving up, pkgconf recursion loop detected')
+        sys.exit(1)
+
+    os.environ['PKGCONF_PYPI_RECURSIVE'] = __file__
     exit_code = 1
     try:
         proc = pkgconf.run_pkgconf(*args, check=True)
