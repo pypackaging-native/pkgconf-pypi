@@ -14,8 +14,10 @@ _LOGGER = logging.getLogger(__name__)
 
 def main() -> None:
     args = sys.argv[1:]
+    exit_code = 1
     try:
-        pkgconf.run_pkgconf(*args, check=True)
+        proc = pkgconf.run_pkgconf(*args, check=True)
+        exit_code = proc.returncode
     except subprocess.SubprocessError:
         # If our pkgconf lookup fails, fallback to the system pkgconf/pkg-config.
         # For simplicity, the previous call will output to stdout/stderr
@@ -29,7 +31,10 @@ def main() -> None:
             cmd = [os.fspath(system_executable), *args]
             _LOGGER.info(f'Running the system {system_executable.name}')
             _LOGGER.info('$ ' + ' '.join(cmd))
-            subprocess.run(cmd)
+            proc = subprocess.run(cmd)
+            exit_code = proc.returncode
+
+    sys.exit(exit_code)
 
 
 def _use_colors() -> bool:
