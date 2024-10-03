@@ -87,7 +87,7 @@ def get_pkg_config_path() -> Sequence[str]:
     return itertools.chain.from_iterable([_get_module_paths(entry.value) for entry in sorted_entrypoints])
 
 
-def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.Popen:
+def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedProcess:
     """Run the pkgconf executable.
 
     :param args: Arguments to pass to the pkgconf call.
