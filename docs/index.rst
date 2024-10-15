@@ -51,6 +51,17 @@ should create an entry that points to the Python module which contains your
         :emphasize-lines: 1
         :caption: example.pc
 
+Package search path
+===================
+
+When you run the ``pkgconf`` executable embedded in this package, the ``PKG_CONFIG_PATH``
+environment variable will be set so that ``pkgconf`` can find the .pc files registered
+by the ``pkg-config`` entrypoint_. If the ``PKG_CONFIG_PATH`` environment variable is
+already set, it will be appended to.
+
+If the embedded pkgconf cannot find a package, by default it will fallback to the system
+``pkgconf``/``pkg-config``, which may find packages present on the system. To disable
+this behavior, set the ``PKGCONF_PYPI_EMBEDDED_ONLY=1`` environment variable.
 
 API
 ===
