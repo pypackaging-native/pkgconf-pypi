@@ -32,6 +32,9 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def _get_system_executable() -> Optional[pathlib.Path]:
+    if os.getenv('PKGCONF_PYPI_EMBEDDED_ONLY') == '1':
+        return None
+
     scripts = sysconfig.get_path('scripts')
     path_list = os.environ.get('PATH', os.defpath).split(os.pathsep)
     if scripts in path_list:
