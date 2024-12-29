@@ -1,4 +1,5 @@
 import importlib
+import importlib.util
 import itertools
 import logging
 import operator
@@ -68,8 +69,30 @@ def get_executable() -> pathlib.Path:
 
 
 def _get_module_paths(name: str) -> Sequence[str]:
-    module = importlib.import_module(name)
-    return list(module.__path__)
+    # this gets the path of the module while trying to avoid loading new
+    # modules (which really is only true if it's a toplevel package)
+    try:
+        spec = importlib.util.find_spec(name)
+    except Exception as e:
+        # Likely failed to load the parent module
+        _LOGGER.warning('Exception occurred when finding module "%s": %r', name, e)
+        return []
+
+    if spec is None:
+        _LOGGER.warning('Could not find module "%s"', name)
+        return []
+
+    if spec.has_location and spec.origin is not None:
+        # this is usually a directory but let's be defensive
+        if os.path.isdir(spec.origin):
+            return [spec.origin]
+        return [os.path.dirname(spec.origin)]
+
+    if not spec.submodule_search_locations:
+        _LOGGER.warning('Module "%s" cannot be located', name)
+        return []
+
+    return spec.submodule_search_locations
 
 
 def get_pkg_config_path() -> Sequence[str]:
