@@ -1,4 +1,3 @@
-import importlib
 import itertools
 import logging
 import operator
@@ -11,6 +10,8 @@ import sysconfig
 import warnings
 
 from typing import Any, Optional
+
+import pkgconf._import
 
 
 if sys.version_info >= (3, 9):
@@ -71,8 +72,15 @@ def get_executable() -> pathlib.Path:
 
 
 def _get_module_paths(name: str) -> Sequence[str]:
-    module = importlib.import_module(name)
-    return list(module.__path__)
+    try:
+        module = pkgconf._import.import_module_no_exec(name)
+        if not hasattr(module, '__path__'):
+            warnings.warn(f"{module} isn't a package, it won't be added to PKG_CONFIG_PATH", stacklevel=2)
+            return []
+        return list(module.__path__)
+    except Exception:
+        _LOGGER.exception(f'Failed to find paths for module {name!r}')
+        return []
 
 
 def get_pkg_config_path() -> Sequence[str]:
