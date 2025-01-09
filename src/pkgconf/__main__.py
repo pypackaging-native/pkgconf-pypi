@@ -16,7 +16,7 @@ def main() -> None:
     args = sys.argv[1:]
 
     # If we find that we are calling ourselves, exit immediately
-    if os.environ.get('PKGCONF_PYPI_RECURSIVE', None) == __file__:
+    if os.environ.get('PKGCONF_PYPI_RECURSIVE') == __file__:
         _LOGGER.info('Giving up, pkgconf recursion loop detected')
         sys.exit(1)
 
@@ -24,7 +24,6 @@ def main() -> None:
     exit_code = 1
     try:
         proc = pkgconf.run_pkgconf(*args, check=True)
-        exit_code = proc.returncode
     except subprocess.SubprocessError:
         # If our pkgconf lookup fails, fallback to the system pkgconf/pkg-config.
         # For simplicity, the previous call will output to stdout/stderr
@@ -39,9 +38,8 @@ def main() -> None:
             _LOGGER.info(f'Running the system {system_executable.name}')
             _LOGGER.info('$ ' + ' '.join(cmd))
             proc = subprocess.run(cmd)
-            exit_code = proc.returncode
 
-    sys.exit(exit_code)
+    sys.exit(proc.returncode)
 
 
 def _use_colors() -> bool:
