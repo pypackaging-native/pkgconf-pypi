@@ -46,6 +46,12 @@ def env(tmpdir, self_wheel):
     return env
 
 
+@pytest.fixture(autouse=True)
+def reset_recursive_flag():
+    yield
+    os.environ.pop('PKGCONF_PYPI_RECURSIVE', None)
+
+
 @pytest.fixture()
 def podman():
     podman = pytest.importorskip('podman')
