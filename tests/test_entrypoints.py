@@ -21,7 +21,8 @@ def test_entries(env, name):
 def test_fallback(mocker, monkeypatch):
     """Test that we fallback to the system pkgconf if ours fails."""
     mocker.patch('pkgconf.run_pkgconf', side_effect=subprocess.CalledProcessError(1, '(cmd)'))
-    mocker.patch('subprocess.run')
+    mocker.patch('subprocess.run', return_value=subprocess.CompletedProcess(['(cmd)'], 0))
+    mocker.patch('sys.exit')
 
     mocker.patch('shutil.which', return_value='(pkgconf-path)')
 
@@ -31,6 +32,7 @@ def test_fallback(mocker, monkeypatch):
     pkgconf.__main__.main()
 
     subprocess.run.assert_called_with(['(pkgconf-path)', *args])
+    sys.exit.assert_called_with(0)
 
 
 def test_venv_system_site_packages(container):
