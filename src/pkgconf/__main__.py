@@ -5,7 +5,7 @@ import sys
 import sysconfig
 import warnings
 
-from typing import Optional, TextIO, Type, Union
+from typing import Optional, TextIO, Union
 
 import pkgconf
 
@@ -86,7 +86,7 @@ def _setup_cli():
 
     def _showwarning(
         message: Union[Warning, str],
-        category: Type[Warning],
+        category: type[Warning],
         filename: str,
         lineno: int,
         file: Optional[TextIO] = None,

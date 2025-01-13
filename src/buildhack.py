@@ -29,13 +29,10 @@ def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
     assert new_name != wheel_path.name
     new_wheel_path = workdir / new_name
 
-    with wheel.wheelfile.WheelFile(
-        wheel_path,
-        'r',
-    ) as original_wheel, wheel.wheelfile.WheelFile(
-        new_wheel_path,
-        'w',
-    ) as new_wheel:
+    with (
+        wheel.wheelfile.WheelFile(wheel_path, 'r') as original_wheel,
+        wheel.wheelfile.WheelFile(new_wheel_path, 'w') as new_wheel,
+    ):
         for item in original_wheel.infolist():
             if item.filename.endswith('.dist-info/WHEEL'):
                 new_wheel.writestr(

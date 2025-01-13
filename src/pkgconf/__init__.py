@@ -9,15 +9,10 @@ import sys
 import sysconfig
 import warnings
 
+from collections.abc import Sequence
 from typing import Any, Optional
 
 import pkgconf._import
-
-
-if sys.version_info >= (3, 9):
-    from collections.abc import Sequence
-else:
-    from typing import Sequence
 
 
 if sys.version_info >= (3, 10):
