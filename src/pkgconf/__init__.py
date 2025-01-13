@@ -1,4 +1,3 @@
-import importlib
 import itertools
 import logging
 import operator
@@ -11,6 +10,8 @@ import sysconfig
 import warnings
 
 from typing import Any, Optional
+
+import pkgconf._import
 
 
 if sys.version_info >= (3, 9):
@@ -32,6 +33,9 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def _get_system_executable() -> Optional[pathlib.Path]:
+    if os.environ.get('PKGCONF_PYPI_EMBEDDED_ONLY'):
+        return None
+
     scripts = sysconfig.get_path('scripts')
     path_list = os.environ.get('PATH', os.defpath).split(os.pathsep)
     if scripts in path_list:
@@ -68,8 +72,15 @@ def get_executable() -> pathlib.Path:
 
 
 def _get_module_paths(name: str) -> Sequence[str]:
-    module = importlib.import_module(name)
-    return list(module.__path__)
+    try:
+        module = pkgconf._import.import_module_no_exec(name)
+        if not hasattr(module, '__path__'):
+            warnings.warn(f"{module} isn't a package, it won't be added to PKG_CONFIG_PATH", stacklevel=2)
+            return []
+        return list(module.__path__)
+    except Exception:
+        _LOGGER.exception(f'Failed to find paths for module {name!r}')
+        return []
 
 
 def get_pkg_config_path() -> Sequence[str]:

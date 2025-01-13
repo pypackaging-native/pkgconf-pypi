@@ -1,0 +1,11 @@
+[build-system]
+build-backend = 'mesonpy'
+requires = ['meson-python']
+
+[project]
+name = 'error-on-import'
+version = '1.0.0'
+
+[project.entry-points.pkg_config]
+error-on-import-foo = 'foo'
+error-on-import-bar = 'foo.bar'

@@ -2,6 +2,7 @@ import logging
 import os
 import subprocess
 import sys
+import sysconfig
 import warnings
 
 from typing import Optional, TextIO, Type, Union
@@ -40,6 +41,27 @@ def main() -> None:
             proc = subprocess.run(cmd)
 
     sys.exit(proc.returncode)
+
+
+def _entrypoint():
+    # Since project.script entrypoints use an hardcoded interpreter path from
+    # the environment they were installed in, when stacking environments (eg.
+    # using venv's --system-site-packages option), the entrypoint will run in
+    # the base environment and, as such, it will not have access to the
+    # entrypoints from the "child" environment. Because of this, when a virtual
+    # environment is enabled, instead of running main() from this process, we
+    # will run 'python -m pkgconf', so that we have access to the full
+    # environment.
+    if 'VIRTUAL_ENV' in os.environ:
+        venv_vars = sysconfig.get_config_vars().copy()
+        venv_vars['base'] = venv_vars['platbase'] = os.environ['VIRTUAL_ENV']
+        scripts = sysconfig.get_path('scripts', scheme='venv', vars=venv_vars)
+        python_path = os.path.join(scripts, 'python')
+        process = subprocess.run([python_path, '-m', 'pkgconf', *sys.argv[1:]])
+        sys.exit(process.returncode)
+    else:
+        _setup_cli()
+        main()
 
 
 def _use_colors() -> bool:
@@ -85,10 +107,6 @@ def _setup_cli():
     warnings.showwarning = _showwarning
 
 
-def _entrypoint():
+if __name__ == '__main__':
     _setup_cli()
     main()
-
-
-if __name__ == '__main__':
-    _entrypoint()
