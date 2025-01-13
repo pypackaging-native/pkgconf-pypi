@@ -22,9 +22,8 @@ def main() -> None:
         sys.exit(1)
 
     os.environ['PKGCONF_PYPI_RECURSIVE'] = __file__
-    exit_code = 1
     try:
-        proc = pkgconf.run_pkgconf(*args, check=True)
+        process = pkgconf.run_pkgconf(*args, check=True)
     except subprocess.SubprocessError:
         # If our pkgconf lookup fails, fallback to the system pkgconf/pkg-config.
         # For simplicity, the previous call will output to stdout/stderr
@@ -38,9 +37,9 @@ def main() -> None:
             cmd = [os.fspath(system_executable), *args]
             _LOGGER.info(f'Running the system {system_executable.name}')
             _LOGGER.info('$ ' + ' '.join(cmd))
-            proc = subprocess.run(cmd)
+            process = subprocess.run(cmd)
 
-    sys.exit(proc.returncode)
+    sys.exit(process.returncode)
 
 
 def _entrypoint():
