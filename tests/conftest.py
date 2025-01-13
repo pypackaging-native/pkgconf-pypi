@@ -1,3 +1,4 @@
+import os
 import pathlib
 import sys
 
@@ -43,3 +44,35 @@ def env(tmpdir, self_wheel):
     env = environment_helpers.create_venv(tmpdir, system_site_packages=True)
     env.install_wheel(self_wheel)
     return env
+
+
+@pytest.fixture()
+def podman():
+    podman = pytest.importorskip('podman')
+    with podman.PodmanClient() as client:
+        yield client
+
+
+@pytest.fixture()
+def container(podman, root, packages):
+    yield podman.containers.run(
+        'python',
+        command=['bash', '-c', 'sleep infinity'],
+        detach=True,
+        privileged=True,  # https://github.com/containers/podman-py/issues/343
+        # security_opt=['seccomp=unconfined'],
+        mounts=[
+            {
+                'type': 'bind',
+                'source': os.fspath(root),
+                'target': '/project',
+                'read_only': False,
+            },
+            {
+                'type': 'bind',
+                'source': os.fspath(packages),
+                'target': '/packages',
+                'read_only': False,
+            },
+        ],
+    )

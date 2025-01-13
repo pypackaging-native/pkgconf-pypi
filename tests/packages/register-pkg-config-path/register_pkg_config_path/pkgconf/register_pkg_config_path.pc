@@ -1,0 +1,9 @@
+prefix=${pcfiledir}/..
+includedir=${prefix}/include
+libdir=${prefix}/lib
+
+Name: register_pkg_config_path
+Description: Example library
+Version: 1.0.0
+Cflags: -I${includedir}
+Libs: -L${libdir} -lregister_pkg_config_path

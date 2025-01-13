@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -27,9 +28,32 @@ def test_fallback(mocker, monkeypatch):
     args = ['--libs', 'py-test-inexistent']
     monkeypatch.setattr(sys, 'argv', ['(argv0)', *args])
 
-    pkgconf.__main__._entrypoint()
+    pkgconf.__main__.main()
 
     subprocess.run.assert_called_with(['(pkgconf-path)', *args])
+
+
+def test_venv_system_site_packages(container):
+    # Install pkgconf in the global site-packages
+    status, out = container.exec_run(['pip', 'install', '/project'])
+    assert status == 0, out
+
+    # Create a venv with --system-site-packages
+    status, out = container.exec_run(['python', '-m', 'venv', '--system-site-packages', '/venv'])
+    assert status == 0, out
+
+    # Install a project that registers a pkg-config path in the venv
+    status, out = container.exec_run(['/venv/bin/pip', 'install', '/packages/register-pkg-config-path'])
+    assert status == 0, out
+
+    # Run pkg-config with VIRTUAL_ENV set
+    status, out = container.exec_run(
+        ['pkg-config', '--cflags', 'register_pkg_config_path'],
+        environment={'VIRTUAL_ENV': '/venv'},
+        stderr=False,
+    )
+    assert status == 0, out
+    assert re.match(rb'.*\-I/venv/lib/python.*/site-packages/register_pkg_config_path/pkgconf/../include'.strip(), out), out
 
 
 def test_main(env):
