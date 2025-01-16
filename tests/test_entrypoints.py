@@ -35,6 +35,21 @@ def test_fallback(mocker, monkeypatch):
     sys.exit.assert_called_with(0)
 
 
+def test_venv_redirect(mocker, monkeypatch):
+    mocker.patch('subprocess.run', return_value=subprocess.CompletedProcess(['(cmd)'], 0))
+    mocker.patch('sys.exit')
+
+    monkeypatch.setenv('VIRTUAL_ENV', '(venv)')
+
+    args = ['--libs', 'py-test-inexistent']
+    monkeypatch.setattr(sys, 'argv', ['(argv0)', *args])
+
+    pkgconf.__main__._entrypoint()
+
+    assert subprocess.run.call_args.args[0][1:] == ['-m', 'pkgconf', *args]
+    sys.exit.assert_called_with(0)
+
+
 def test_venv_system_site_packages(container):
     # Install pkgconf in the global site-packages
     status, out = container.exec_run(['pip', 'install', '/project'])

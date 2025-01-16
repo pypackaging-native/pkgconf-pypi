@@ -42,6 +42,12 @@ def main() -> None:
     sys.exit(process.returncode)
 
 
+def _venv_paths(config_vars: dict[str, str]) -> str:
+    if 'venv' in sysconfig.get_scheme_names():
+        return sysconfig.get_paths('venv', vars=config_vars)
+    return sysconfig.get_paths(vars=config_vars)
+
+
 def _entrypoint():
     # Since project.script entrypoints use an hardcoded interpreter path from
     # the environment they were installed in, when stacking environments (eg.
@@ -54,7 +60,7 @@ def _entrypoint():
     if 'VIRTUAL_ENV' in os.environ:
         venv_vars = sysconfig.get_config_vars().copy()
         venv_vars['base'] = venv_vars['platbase'] = os.environ['VIRTUAL_ENV']
-        scripts = sysconfig.get_path('scripts', scheme='venv', vars=venv_vars)
+        scripts = _venv_paths(venv_vars)['scripts']
         python_path = os.path.join(scripts, 'python')
         process = subprocess.run([python_path, '-m', 'pkgconf', *sys.argv[1:]])
         sys.exit(process.returncode)
