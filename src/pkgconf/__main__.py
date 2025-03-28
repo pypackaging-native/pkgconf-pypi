@@ -22,9 +22,10 @@ def main() -> None:
         sys.exit(1)
 
     os.environ['PKGCONF_PYPI_RECURSIVE'] = __file__
+    returncode = 1
     try:
-        process = pkgconf.run_pkgconf(*args, check=True)
-    except subprocess.SubprocessError:
+        returncode = pkgconf.run_pkgconf(*args, check=True).returncode
+    except subprocess.SubprocessError as e:
         # If our pkgconf lookup fails, fallback to the system pkgconf/pkg-config.
         # For simplicity, the previous call will output to stdout/stderr
         # regardless of its success, since capturing stdout/stderr in order to
@@ -37,9 +38,11 @@ def main() -> None:
             cmd = [os.fspath(system_executable), *args]
             _LOGGER.info(f'Running the system {system_executable.name}')
             _LOGGER.info('$ ' + ' '.join(cmd))
-            process = subprocess.run(cmd)
+            returncode = subprocess.run(cmd).returncode
+        elif isinstance(e, subprocess.CalledProcessError):
+            returncode = e.returncode
 
-    sys.exit(process.returncode)
+    sys.exit(returncode)
 
 
 def _venv_paths(config_vars: dict[str, str]) -> str:
