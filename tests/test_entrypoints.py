@@ -35,6 +35,22 @@ def test_fallback(mocker, monkeypatch):
     sys.exit.assert_called_with(0)
 
 
+def test_no_fallback(mocker, monkeypatch):
+    """Test that we don't fail if there's no system pkgconf and ours fails."""
+    mocker.patch('pkgconf.run_pkgconf', side_effect=subprocess.CalledProcessError(1, '(cmd)'))
+    mocker.patch('subprocess.run', return_value=subprocess.CompletedProcess(['(cmd)'], 0))
+    mocker.patch('sys.exit')
+
+    mocker.patch('shutil.which', return_value=None)
+
+    args = ['--libs', 'py-test-inexistent']
+    monkeypatch.setattr(sys, 'argv', ['(argv0)', *args])
+
+    pkgconf.__main__.main()
+
+    sys.exit.assert_called_with(1)
+
+
 def test_venv_redirect(mocker, monkeypatch):
     mocker.patch('subprocess.run', return_value=subprocess.CompletedProcess(['(cmd)'], 0))
     mocker.patch('sys.exit')
