@@ -64,7 +64,7 @@ source = 'https://github.com/pypackaging-native/pkgconf-pypi'
 
 [tool.meson-python.args]
 install = ['--tags=python-runtime']
-setup = ['--prefix=/build']
+# setup = ['--prefix=/build']
 
 [tool.cibuildwheel]
 # Build is Python-independent, so we select a single Python version (doesn't
