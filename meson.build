@@ -16,7 +16,6 @@ py.install_sources(
   [
     'src/pkgconf/__init__.py',
     'src/pkgconf/__main__.py',
-    'src/pkgconf/_import.py',
     'src/pkgconf/diagnose.py',
   ],
   subdir: 'pkgconf',

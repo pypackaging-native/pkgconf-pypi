@@ -17,10 +17,10 @@ def test_diagnose(env, packages):
         entrypoints:
           namespace:
             value: namespace
-            paths: .*{os.path.sep}namespace
+             path: .*{os.path.sep}namespace
           register-pkg-config-path:
             value: register_pkg_config_path.pkgconf
-            paths: .*{os.path.sep}register_pkg_config_path{os.path.sep}pkgconf
+             path: .*{os.path.sep}register_pkg_config_path{os.path.sep}pkgconf
         PKG_CONFIG_PATH: .*{os.path.sep}namespace:.*{os.path.sep}register_pkg_config_path{os.path.sep}pkgconf
     """).strip()
 
