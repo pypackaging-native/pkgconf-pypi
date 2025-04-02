@@ -19,7 +19,7 @@ else:
     import importlib_metadata
 
 
-__version__ = '2.4.3-0'
+__version__ = '2.4.3-1'
 
 
 _LOGGER = logging.getLogger(__name__)
