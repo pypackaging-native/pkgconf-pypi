@@ -47,6 +47,11 @@ def env(tmpdir, self_wheel):
 
 
 @pytest.fixture(autouse=True)
+def unset_pkg_config_path(monkeypatch):
+    monkeypatch.delenv('PKG_CONFIG_PATH', raising=False)
+
+
+@pytest.fixture(autouse=True)
 def reset_recursive_flag():
     yield
     os.environ.pop('PKGCONF_PYPI_RECURSIVE', None)
