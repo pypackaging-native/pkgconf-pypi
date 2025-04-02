@@ -13,6 +13,10 @@ def get_requires_for_build_wheel(config_settings=None):
     return mesonpy.get_requires_for_build_wheel(config_settings)
 
 
+def get_requires_for_build_editable(config_settings=None):
+    return mesonpy.get_requires_for_build_editable(config_settings)
+
+
 def build_sdist(sdist_directory, config_settings=None):
     return mesonpy.build_sdist(sdist_directory, config_settings)
 
@@ -53,3 +57,7 @@ def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
 
     wheel_path.unlink()
     return new_wheel_path.name
+
+
+def build_editable(wheel_directory, config_settings=None, metadata_directory=None):
+    return mesonpy.build_editable(wheel_directory, config_settings, metadata_directory)
