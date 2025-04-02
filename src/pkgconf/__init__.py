@@ -141,7 +141,9 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedPro
     :param subprocess_kwargs: Keyword arguments to pass to the subprocess.run call.
     """
     env = os.environ.copy()
-    env['PKG_CONFIG_PATH'] = os.pathsep.join(filter(None, (env.get('PKG_CONFIG_PATH'), *get_pkg_config_path())))
+    PKG_CONFIG_PATH = env.get('PKG_CONFIG_PATH', '').split(os.pathsep) + get_pkg_config_path()
+    PKG_CONFIG_PATH = list(dict.fromkeys(PKG_CONFIG_PATH))  # Remove duplicated entried
+    env['PKG_CONFIG_PATH'] = os.pathsep.join(PKG_CONFIG_PATH)
     cmd = [os.fspath(get_executable()), *args]
     _LOGGER.info('Running the Python pkgconf')
     _LOGGER.info('$ ' + shlex.join(('PKG_CONFIG_PATH=' + shlex.quote(env['PKG_CONFIG_PATH']), *cmd)))
