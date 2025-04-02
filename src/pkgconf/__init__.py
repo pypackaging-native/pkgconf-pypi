@@ -37,14 +37,14 @@ class PathWarning(Warning):
             f'- Distribution: {self._distribution_info()}'
         )
 
-    def _distribution_info(self):
+    def _distribution_info(self) -> str:
         info = f'{self._entrypoint.dist}-{self._entrypoint.dist.version}'
         metadata_path = self._find_metadata_path()
         if metadata_path:
             info += f' at {metadata_path!r}'
         return info
 
-    def _find_metadata_path(self) -> str | None:
+    def _find_metadata_path(self) -> Optional[str]:
         try:
             dist_root = self._entrypoint.dist.locate_file('')
         except NotImplementedError:
