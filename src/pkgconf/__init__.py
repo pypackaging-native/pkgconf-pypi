@@ -2,6 +2,7 @@ import logging
 import operator
 import os
 import pathlib
+import shlex
 import shutil
 import subprocess
 import sys
@@ -148,5 +149,5 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedPro
     )
     cmd = [os.fspath(get_executable()), *args]
     _LOGGER.info('Running the Python pkgconf')
-    _LOGGER.info('$ PKG_CONFIG_PATH=' + env['PKG_CONFIG_PATH'] + ' ' + ' '.join(cmd))
+    _LOGGER.info('$ ' + shlex.join(('PKG_CONFIG_PATH=' + shlex.quote(env['PKG_CONFIG_PATH']), *cmd)))
     return subprocess.run(cmd, env=env, **subprocess_kwargs)

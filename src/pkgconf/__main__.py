@@ -1,5 +1,6 @@
 import logging
 import os
+import shlex
 import subprocess
 import sys
 import sysconfig
@@ -37,7 +38,7 @@ def main() -> None:
         if system_executable:
             cmd = [os.fspath(system_executable), *args]
             _LOGGER.info(f'Running the system {system_executable.name}')
-            _LOGGER.info('$ ' + ' '.join(cmd))
+            _LOGGER.info('$ ' + shlex.join(cmd))
             returncode = subprocess.run(cmd).returncode
         elif isinstance(e, subprocess.CalledProcessError):
             returncode = e.returncode
