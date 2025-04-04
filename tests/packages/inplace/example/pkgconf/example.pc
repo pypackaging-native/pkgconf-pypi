@@ -1,0 +1,8 @@
+prefix=${pcfiledir}/..
+includedir=${prefix}/include
+
+Name: example
+Description: Example header library
+Version: 1.0.0
+Cflags: -I${includedir}
+Libs:
