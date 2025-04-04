@@ -1,0 +1,13 @@
+[build-system]
+build-backend = 'hatchling.build'
+requires = ['hatchling']
+
+[project]
+name = 'example'
+version = '1.0.0'
+
+[project.entry-points.pkg_config]
+example = 'example.pkgconf'
+
+[tool.hatch.build.targets.wheel]
+packages = ['example']
