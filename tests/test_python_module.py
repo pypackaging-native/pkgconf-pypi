@@ -1,5 +1,6 @@
 import os
 import pathlib
+import shutil
 import subprocess
 
 import pytest
@@ -69,3 +70,19 @@ def test_get_executable_fallback_to_system(mocker):
         executable = pkgconf.get_executable()
 
     assert executable == pkgconf._get_system_executable()
+
+
+def test_inplace_editable(env, tmp_path, packages, data):
+    dst = tmp_path / 'inplace'
+    shutil.copytree(packages / 'inplace', dst)
+
+    env.install(['-e', dst])
+
+    src = os.fspath(data / 'needs-example-lib.c')
+    bin = os.fspath(tmp_path / 'needs-example-lib')
+
+    cflags = env.run_interpreter('-m', 'pkgconf', '--cflags', 'example').decode().split()
+    subprocess.check_call(['gcc', '-o', bin, src, *cflags])
+    out = subprocess.check_output([bin])
+
+    assert out == b'bar'
