@@ -33,10 +33,11 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+          - ubuntu-24.04-arm
           - windows-latest
           - windows-11-arm
-          - macos-13
-          - macos-14
+          - macos-13      # x86-64
+          - macos-latest  # arm64
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -59,7 +60,7 @@ jobs:
           platforms: all
       - uses: pypa/cibuildwheel@2edf5784998b7b1ab70445baced23069e839541e # 3.0.0rc2
         env:
-          CIBW_ARCHS_LINUX: aarch64 ppc64le s390x
+          CIBW_ARCHS_LINUX: ppc64le s390x
       - uses: actions/upload-artifact@v4
         if: always()
         with:
