@@ -4,8 +4,9 @@ import pathlib
 import shlex
 import subprocess
 import sys
-import tomllib
 import warnings
+
+import tomllib
 
 
 def _use_colors() -> bool:
