@@ -15,19 +15,25 @@ concurrency:
 
 jobs:
   pytest:
-    runs-on: ${{ matrix.os }}-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os:
-          - ubuntu
-          - windows
-          - macos
+          - ubuntu-latest
+          - windows-latest
+          - windows-11-arm
+          - macos-latest
         python:
           - '3.9'
           - '3.10'
           - '3.11'
           - '3.12'
           - '3.13'
+        exclude:
+          - os: windows-11-arm
+            python: '3.9'
+          - os: windows-11-arm
+            python: '3.10'
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
