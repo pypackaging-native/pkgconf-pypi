@@ -9,7 +9,7 @@
 [![PyPI version](https://badge.fury.io/py/pkgconf.svg)](https://pypi.org/project/pkgconf/)
 [![Discord](https://img.shields.io/discord/803025117553754132?label=Discord%20chat%20pkgconf-pypi)](https://discord.gg/pypa)
 
-This goal of this repo is to facility building and publishing of
+This goal of this repo is to facilitate building and publishing of
 [pkgconf](https://github.com/pkgconf/pkgconf) binaries on PyPI, primarily for
 ease of installing in a cross-platform manner. This is useful when `pkgconf` is
 for example needed in workflows of other Python packages.
