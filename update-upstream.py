@@ -60,9 +60,9 @@ downstream_version_tuple = tuple(downstream_version.split('-')[0].split('.'))
 print(f'{yellow}Current version: {downstream_version}{reset}')
 
 # Get the latest upstream version
-#subprocess.check_output(['git', 'fetch', 'origin', 'master'], cwd=submodule)
+# subprocess.check_output(['git', 'fetch', 'origin', 'master'], cwd=submodule)
 git('fetch', 'origin', 'master')
-#upstream_latest_tag = subprocess.check_output(['git', 'describe', -'-tags', '--abbrev=0'], cwd=submodule)
+# upstream_latest_tag = subprocess.check_output(['git', 'describe', -'-tags', '--abbrev=0'], cwd=submodule)
 upstream_latest_tag = git('describe', '--tags', '--abbrev=0', capture=True).stdout.strip()
 upstream_version = upstream_latest_tag.removeprefix('pkgconf-')
 upstream_version_tuple = tuple(upstream_version.split('.'))
@@ -71,12 +71,14 @@ upstream_version_tuple = tuple(upstream_version.split('.'))
 if upstream_version_tuple > downstream_version_tuple:
     print(f'{yellow}Found new upstream version: {upstream_version} (current: {downstream_version}){reset}')
     print(f'{yellow}Updating...{reset}')
-    #subprocess.check_output(['git', 'checkout', upstream_latest_tag], cwd=submodule)
+    # subprocess.check_output(['git', 'checkout', upstream_latest_tag], cwd=submodule)
     git('checkout', upstream_latest_tag)
     new_downstream_version = f'{upstream_version}-0'
     print(f'{yellow}New version: {new_downstream_version}{reset}')
     for file in version_files:
-        file.write_text(file.read_text().replace(
-            f"'{downstream_version}'",
-            f"'{new_downstream_version}'",
-        ))
+        file.write_text(
+            file.read_text().replace(
+                f"'{downstream_version}'",
+                f"'{new_downstream_version}'",
+            )
+        )
