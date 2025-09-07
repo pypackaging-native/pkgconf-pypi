@@ -1,3 +1,4 @@
+import json
 import logging
 import operator
 import os
@@ -108,6 +109,22 @@ def _resolve_entrypoint_path(entrypoint: importlib_metadata.EntryPoint) -> str:
     """
     assert entrypoint.dist
     subpath = pathlib.PurePath(*entrypoint.value.split('.'))
+
+    # Check to see if this is an editable distribution
+    # - Uses PEP 610 only, ignoring legacy egg-link
+    direct_url_text = entrypoint.dist.read_text('direct_url.json')
+    if direct_url_text is not None:
+        data = json.loads(direct_url_text)
+        if data.get('dir_info', {}).get('editable') is True:
+            # special case: find pth files and resolve relative to them instead
+            files = entrypoint.dist.files or []
+            for f in files:
+                if f.name.endswith('.pth'):
+                    pth_content = f.read_text()
+                    pth = pathlib.Path(pth_content.splitlines()[0])
+                    if (pth / subpath).exists():
+                        return os.fspath(pth / subpath)
+
     try:
         module_path = entrypoint.dist.locate_file(subpath).resolve()
     except NotImplementedError:
