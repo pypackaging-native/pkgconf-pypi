@@ -149,7 +149,7 @@ class EntryPoint:
         return self._ep.dist
 
     @property
-    def path(self) -> Optional[str]:
+    def path(self) -> str:
         try:
             return self._resolve_via_import_system()
         except Exception:
