@@ -41,7 +41,13 @@ def self_wheel(tmp_path_factory):
 @pytest.fixture
 def env(tmpdir, self_wheel):
     """Make a virtual environment with our project installed."""
-    env = environment_helpers.create_venv(tmpdir, system_site_packages=True)
+    env = environment_helpers.create_venv(tmpdir)
+
+    # Write .pth file pointing to the current environment
+    current_env = environment_helpers.CurrentEnvironment()
+    purelib, platlib = current_env.scheme['purelib'], current_env.scheme['platlib']
+    env.scheme['purelib'].joinpath('base-env.pth').write_text(f'{purelib!s}\n{platlib!s}\n')
+
     env.install_wheel(self_wheel)
     return env
 
