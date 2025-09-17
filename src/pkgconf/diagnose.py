@@ -7,10 +7,10 @@ def report() -> None:
     print(f'pkgconf executable: {pkgconf.get_executable()}')
 
     print('entrypoints:')
-    for entrypoint in pkgconf._find_entrypoints():
+    for entrypoint in pkgconf._entry_points():
         print(f'  {entrypoint.name}:')
         print(f'    value: {entrypoint.value}')
-        print(f'     path: {pkgconf._resolve_entrypoint_path(entrypoint)}')
+        print(f'     path: {entrypoint.path}')
 
     print(f'PKG_CONFIG_PATH: {os.pathsep.join(pkgconf.get_pkg_config_path())}')
 
