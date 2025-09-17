@@ -16,6 +16,7 @@ py.install_sources(
   [
     'src/pkgconf/__init__.py',
     'src/pkgconf/__main__.py',
+    'src/pkgconf/_path_entrypoints.py',
     'src/pkgconf/diagnose.py',
     'src/pkgconf/py.typed',
   ],
