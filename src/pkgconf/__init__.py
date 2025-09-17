@@ -7,8 +7,7 @@ import subprocess
 import sysconfig
 import warnings
 
-from collections.abc import Sequence
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import pkgconf._path_entrypoints
 
@@ -39,6 +38,8 @@ def _get_system_executable() -> Optional[pathlib.Path]:
 
 def get_executable() -> pathlib.Path:
     """Get the pkgconf executable."""
+    executable: Optional[pathlib.Path]
+
     if os.name == 'posix':
         executable_name = 'pkgconf'
     elif os.name == 'nt':
@@ -64,7 +65,7 @@ def _entry_points() -> list[pkgconf._path_entrypoints.EntryPoint]:
     return pkgconf._path_entrypoints.entry_points(group='pkg_config')
 
 
-def get_pkg_config_path() -> Sequence[str]:
+def get_pkg_config_path() -> list[str]:
     """Calculate PKG_CONFIG_PATH for Python packages in the current environment.
 
     Python packages may register a directory for their pkg-config files by
@@ -77,7 +78,7 @@ def get_pkg_config_path() -> Sequence[str]:
     return [ep.path for ep in _entry_points()]
 
 
-def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedProcess:
+def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedProcess[Union[bytes, str]]:
     """Run the pkgconf executable.
 
     :param args: Arguments to pass to the pkgconf call.
