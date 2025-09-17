@@ -1,59 +1,24 @@
 import logging
-import operator
 import os
 import pathlib
 import shlex
 import shutil
 import subprocess
-import sys
 import sysconfig
 import warnings
 
 from collections.abc import Sequence
 from typing import Any, Optional
 
+import pkgconf._path_entrypoints
 
-if sys.version_info >= (3, 10):
-    import importlib.metadata as importlib_metadata
-else:
-    import importlib_metadata
+from pkgconf._path_entrypoints import PathWarning
 
 
 __version__ = '2.4.3-2'
 
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class PathWarning(Warning):
-    def __init__(self, message: str, entrypoint: importlib_metadata.EntryPoint) -> None:
-        self._message = message
-        self._entrypoint = entrypoint
-
-    def __str__(self) -> str:
-        return (
-            f'Skipping PKG_CONFIG_PATH entry: {self._message}'
-            f'- Entrypoint: {self._entrypoint}'
-            f'- Distribution: {self._distribution_info()}'
-        )
-
-    def _distribution_info(self) -> str:
-        info = f'{self._entrypoint.dist}-{self._entrypoint.dist.version}'
-        metadata_path = self._find_metadata_path()
-        if metadata_path:
-            info += f' at {metadata_path!r}'
-        return info
-
-    def _find_metadata_path(self) -> Optional[str]:
-        try:
-            dist_root = self._entrypoint.dist.locate_file('')
-        except NotImplementedError:
-            return None
-
-        for file in self._entrypoint.dist.files() or []:
-            if file.parts[0].endswith('.dist-info'):
-                return str(dist_root / file.parts[0])
-        return None
 
 
 def _get_system_executable() -> Optional[pathlib.Path]:
@@ -95,30 +60,8 @@ def get_executable() -> pathlib.Path:
     raise RuntimeError(msg)
 
 
-def _find_entrypoints() -> Sequence[importlib_metadata.EntryPoint]:
-    """Return the list of pkg_config entrypoints sorted by name."""
-    entrypoints = importlib_metadata.entry_points(group='pkg_config')
-    return sorted(entrypoints, key=operator.attrgetter('name'))
-
-
-def _resolve_entrypoint_path(entrypoint: importlib_metadata.EntryPoint) -> str:
-    """Return a filesystem path for module specified in the entrypoint.
-
-    XXX: This only considers files provided by the distribution that registered the entrypoint.
-    """
-    assert entrypoint.dist
-    subpath = pathlib.PurePath(*entrypoint.value.split('.'))
-    try:
-        module_path = entrypoint.dist.locate_file(subpath).resolve()
-    except NotImplementedError:
-        warnings.warn(
-            PathWarning(
-                'Unable to resolve the file-system path for the entrypoint, '
-                f"as {entrypoint.dist} doesn't implement locate_file()"
-            ),
-            stacklevel=2,
-        )
-    return os.fspath(module_path)
+def _entry_points() -> list[pkgconf._path_entrypoints.EntryPoint]:
+    return pkgconf._path_entrypoints.entry_points(group='pkg_config')
 
 
 def get_pkg_config_path() -> Sequence[str]:
@@ -131,7 +74,7 @@ def get_pkg_config_path() -> Sequence[str]:
     [project.entry-points.pkg-config]
     entrypoint-name = 'project.package'
     """
-    return [_resolve_entrypoint_path(ep) for ep in _find_entrypoints()]
+    return [ep.path for ep in _entry_points()]
 
 
 def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedProcess:
@@ -148,3 +91,11 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedPro
     _LOGGER.info('Running the Python pkgconf')
     _LOGGER.info('$ ' + shlex.join(('PKG_CONFIG_PATH=' + shlex.quote(env['PKG_CONFIG_PATH']), *cmd)))
     return subprocess.run(cmd, env=env, **subprocess_kwargs)
+
+
+__all__ = [
+    'PathWarning',
+    'get_executable',
+    'get_pkg_config_path',
+    'run_pkgconf',
+]
