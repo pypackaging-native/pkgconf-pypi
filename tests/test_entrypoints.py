@@ -1,6 +1,4 @@
-import os
 import re
-import shutil
 import subprocess
 import sys
 
@@ -13,8 +11,7 @@ import pkgconf.__main__
 @pytest.mark.parametrize('name', ['pkgconf', 'pkg-config'])
 def test_entries(env, name):
     # TODO: Check PKG_CONFIG_PATH is correctly set
-    path = shutil.which(name, path=env.scripts)
-    help_text = subprocess.check_output([os.fspath(path), '--help'])
+    help_text = env.run_script('pkgconf', '--help')
     assert help_text.decode().startswith('usage: pkgconf')
 
 
