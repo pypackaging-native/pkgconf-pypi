@@ -8,7 +8,6 @@ import os
 import pathlib
 import pickle
 import sys
-import textwrap
 import types
 import warnings
 
@@ -67,6 +66,8 @@ def module_path(name: str) -> str:
 
 # Helpers to run the import helpers isolated from the import state of the main process/interpreter
 
+_subinterpreter = None
+
 
 def run_in_subinterpreter(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
     """Run callable in a subinterpreter — using concurrent.interpreters."""
@@ -74,30 +75,82 @@ def run_in_subinterpreter(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs)
 
     import concurrent.interpreters
 
-    with contextlib.closing(concurrent.interpreters.create()) as ip:
-        return ip.call(fn, *args, **kwargs)
+    global _subinterpreter
+
+    if _subinterpreter is None:
+        _subinterpreter = concurrent.interpreters.create()
+
+    return _subinterpreter.call(fn, *args, **kwargs)
+
+
+_worker = None
+_WORKER_CODE = r"""
+import sys, pickle
+
+stdin, stdout = sys.stdin.buffer, sys.stdout.buffer
+
+while True:
+    try:
+        length_data = stdin.read(4)
+        if not length_data:
+            break
+        length = int.from_bytes(length_data, "big")
+        payload = stdin.read(length)
+        fn, args, kwargs = pickle.loads(payload)
+        try:
+            result = fn(*args, **kwargs)
+            data = pickle.dumps((True, result))
+        except Exception as e:
+            data = pickle.dumps((False, e))
+        stdout.write(len(data).to_bytes(4, "big"))
+        stdout.write(data)
+        stdout.flush()
+    except Exception:
+        break
+"""
+
+
+def _make_worker():
+    """Start worker subprocess and assign callable to _worker."""
+    global _worker
+    import subprocess
+
+    proc = subprocess.Popen(
+        [sys.executable, '-u', '-c', _WORKER_CODE],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+    )
+
+    def _worker_fn(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
+        payload = pickle.dumps((fn, args, kwargs))
+        length = len(payload).to_bytes(4, 'big')
+
+        proc.stdin.write(length)
+        proc.stdin.write(payload)
+        proc.stdin.flush()
+
+        length_data = proc.stdout.read(4)
+        if not length_data:
+            msg = 'Subprocess died'
+            raise RuntimeError(msg)
+        resp_length = int.from_bytes(length_data, 'big')
+        data = proc.stdout.read(resp_length)
+        ok, value = pickle.loads(data)
+
+        if ok:
+            return value
+        else:
+            raise value
+
+    _worker = _worker_fn
 
 
 def run_in_subprocess(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
     """Run callable in a subprocess."""
-    import subprocess
+    if _worker is None:
+        _make_worker()
 
-    pickled_call_tuple = pickle.dumps((fn, args, kwargs))
-    process_cmd = textwrap.dedent(f"""
-        import pickle, sys
-
-        fn, args, kwargs = pickle.loads({pickled_call_tuple})
-        value = fn(*args, **kwargs)
-        sys.stdout.buffer.write(
-            pickle.dumps(value)
-        )
-    """)
-    pickled_value = subprocess.run(
-        [sys.executable, '-c', process_cmd],
-        check=True,
-        capture_output=True,
-    ).stdout
-    return pickle.loads(pickled_value)
+    return _worker(fn, *args, **kwargs)
 
 
 def run_in_isolated_context(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
