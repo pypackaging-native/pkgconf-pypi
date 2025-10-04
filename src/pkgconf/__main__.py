@@ -6,7 +6,7 @@ import sys
 import sysconfig
 import warnings
 
-from typing import Optional, TextIO, Union
+from typing import TextIO
 
 import pkgconf
 
@@ -104,12 +104,12 @@ def _setup_cli():
     pkgconf._CLI_LOGGER.setLevel(logging.INFO)
 
     def _showwarning(
-        message: Union[Warning, str],
+        message: Warning | str,
         category: type[Warning],
         filename: str,
         lineno: int,
-        file: Optional[TextIO] = None,
-        line: Optional[str] = None,
+        file: TextIO | None = None,
+        line: str | None = None,
     ) -> None:  # pragma: no cover
         print(f'{yellow}WARNING{reset} {message}', file=sys.stderr)
 

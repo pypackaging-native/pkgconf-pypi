@@ -1,5 +1,7 @@
 import contextlib
 import importlib.machinery
+import importlib.metadata
+import importlib.resources
 import importlib.util
 import operator
 import os
@@ -10,18 +12,10 @@ import textwrap
 import types
 import warnings
 
-from collections.abc import Iterable
-from typing import Any, Callable, Optional, ParamSpec, TypeVar
+from collections.abc import Callable, Iterable
+from typing import Any, ParamSpec, TypeVar
 
 import pkgconf
-
-
-if sys.version_info >= (3, 10):
-    import importlib.metadata as importlib_metadata
-    import importlib.resources as importlib_resources
-else:
-    import importlib_metadata
-    import importlib_resources
 
 
 P = ParamSpec('P')
@@ -63,7 +57,7 @@ def module_path(name: str) -> str:
         if len(module.__spec__.submodule_search_locations) == 1:
             return module.__spec__.submodule_search_locations[0]
     # Traversables often implement __fspath__, attempt to use it.
-    traversable = importlib_resources.files(module)
+    traversable = importlib.resources.files(module)
     if isinstance(traversable, os.PathLike):
         return os.fsdecode(os.fspath(traversable))
     # Give up :/
@@ -129,7 +123,7 @@ def replace_sys_modules() -> Iterable[None]:
 
 
 class EntryPoint:
-    def __init__(self, entrypoint: importlib_metadata.EntryPoint) -> None:
+    def __init__(self, entrypoint: importlib.metadata.EntryPoint) -> None:
         self._ep = entrypoint
 
     @property
@@ -145,7 +139,7 @@ class EntryPoint:
         return self._ep.group
 
     @property
-    def dist(self) -> Optional[importlib_metadata.Distribution]:
+    def dist(self) -> importlib.metadata.Distribution | None:
         return self._ep.dist
 
     @property
@@ -180,7 +174,7 @@ class EntryPoint:
 
 
 def entry_points(**select_params: Any) -> list[EntryPoint]:
-    original_eps = importlib_metadata.entry_points(**select_params)
+    original_eps = importlib.metadata.entry_points(**select_params)
     our_eps = map(EntryPoint, original_eps)
     valid_eps = filter(operator.attrgetter('path'), our_eps)
     return sorted(valid_eps, key=operator.attrgetter('name'))
@@ -206,7 +200,7 @@ class PathWarning(Warning):
             info += f' at {metadata_path!r}'
         return info
 
-    def _find_metadata_path(self) -> Optional[str]:
+    def _find_metadata_path(self) -> str | None:
         assert self._entrypoint.dist
         try:
             dist_root = self._entrypoint.dist.locate_file('')

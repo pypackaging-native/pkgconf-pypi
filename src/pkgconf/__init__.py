@@ -7,7 +7,7 @@ import subprocess
 import sysconfig
 import warnings
 
-from typing import Any, Optional, Union
+from typing import Any
 
 import pkgconf._path_entrypoints
 
@@ -21,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 _CLI_LOGGER = _LOGGER.getChild('cli')
 
 
-def _get_system_executable() -> Optional[pathlib.Path]:
+def _get_system_executable() -> pathlib.Path | None:
     if os.environ.get('PKGCONF_PYPI_EMBEDDED_ONLY'):
         return None
 
@@ -39,7 +39,7 @@ def _get_system_executable() -> Optional[pathlib.Path]:
 
 def get_executable() -> pathlib.Path:
     """Get the pkgconf executable."""
-    executable: Optional[pathlib.Path]
+    executable: pathlib.Path | None
 
     if os.name == 'posix':
         executable_name = 'pkgconf'
@@ -79,7 +79,7 @@ def get_pkg_config_path() -> list[str]:
     return [ep.path for ep in _entry_points()]
 
 
-def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedProcess[Union[bytes, str]]:
+def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedProcess[bytes | str]:
     """Run the pkgconf executable.
 
     :param args: Arguments to pass to the pkgconf call.
