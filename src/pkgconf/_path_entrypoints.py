@@ -166,7 +166,6 @@ class EntryPoint:
             return run_in_isolated_context(module_path, self.value)
         except Exception:
             pkgconf._LOGGER.exception('Failed to run module_path in isolated context')
-            raise
         # Fallback to running in the current context, but try to save and
         # restore the original import state.
         with replace_sys_modules():
