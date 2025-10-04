@@ -99,9 +99,9 @@ def _setup_cli():
 
     logging.basicConfig(
         stream=sys.stderr,
-        format=f'{dim}> %(message)s{reset}',
-        level=logging.INFO,
+        format=f'{dim}> %(message)s{reset} [%(levelname)s:%(name)s]',
     )
+    pkgconf._CLI_LOGGER.setLevel(logging.INFO)
 
     def _showwarning(
         message: Union[Warning, str],

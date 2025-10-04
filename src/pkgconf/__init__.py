@@ -18,6 +18,7 @@ __version__ = '2.4.3-2'
 
 
 _LOGGER = logging.getLogger(__name__)
+_CLI_LOGGER = _LOGGER.getChild('cli')
 
 
 def _get_system_executable() -> Optional[pathlib.Path]:
@@ -89,8 +90,8 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedPro
     PKG_CONFIG_PATH = list(dict.fromkeys(PKG_CONFIG_PATH))  # Remove duplicated entried
     env['PKG_CONFIG_PATH'] = os.pathsep.join(PKG_CONFIG_PATH)
     cmd = [os.fspath(get_executable()), *args]
-    _LOGGER.info('Running the Python pkgconf')
-    _LOGGER.info('$ ' + shlex.join(('PKG_CONFIG_PATH=' + shlex.quote(env['PKG_CONFIG_PATH']), *cmd)))
+    _CLI_LOGGER.info('Running the Python pkgconf')
+    _CLI_LOGGER.info('$ ' + shlex.join(('PKG_CONFIG_PATH=' + shlex.quote(env['PKG_CONFIG_PATH']), *cmd)))
     return subprocess.run(cmd, env=env, **subprocess_kwargs)
 
 
