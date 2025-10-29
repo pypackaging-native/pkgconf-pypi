@@ -5,16 +5,17 @@
 [build-system]
 backend-path = ['src']
 # build-backend = 'mesonpy'
-# requires = ['meson-python']
+# requires = ['meson-python>=0.18.0']
 build-backend = 'buildhack'
-requires = ['meson-python', 'wheel']
+requires = ['meson-python>=0.18.0', 'wheel']
 
 [project]
 name = 'pkgconf'
 version = '2.5.1-0'
 description = '`pkgconf` is a program which helps with discovering library dependencies and configuring compiler and linker flags.'
 readme = 'README.md'
-license = {file = 'LICENSE'}
+license = 'MIT'
+license-files = ['LICENSE']
 authors = [
   {name = 'Ralf Gommers', email = 'ralf.gommers@gmail.com'},
   {name = 'Filipe Laíns', email = 'lains@riseup.net'}
@@ -22,8 +23,6 @@ authors = [
 classifiers = [
   'Development Status :: 4 - Beta',
   'Intended Audience :: Developers',
-  'License :: OSI Approved :: MIT License',
-  'License :: OSI Approved :: ISC License (ISCL)',
   'Programming Language :: C',
   'Topic :: Software Development',
   'Operating System :: Microsoft :: Windows',
