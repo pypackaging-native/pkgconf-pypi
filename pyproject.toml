@@ -84,7 +84,6 @@ strict = true
 
 [tool.ruff]
 line-length = 127
-src = ['src']
 
 [tool.ruff.format]
 quote-style = 'single'
