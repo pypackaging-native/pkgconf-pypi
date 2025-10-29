@@ -28,7 +28,7 @@ jobs:
           - '3.11'
           - '3.12'
           - '3.13'
-          - '3.14-dev'
+          - '3.14'
         exclude:
           - os: windows-11-arm
             python: '3.10'
