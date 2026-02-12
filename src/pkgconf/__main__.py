@@ -101,7 +101,10 @@ def _setup_cli():
         stream=sys.stderr,
         format=f'{dim}> %(message)s{reset} [%(levelname)s:%(name)s]',
     )
-    pkgconf._CLI_LOGGER.setLevel(logging.INFO)
+    if os.environ.get('PYPI_PKGCONF_DEBUG'):
+        pkgconf._CLI_LOGGER.setLevel(logging.INFO)
+    else:
+        pkgconf._CLI_LOGGER.setLevel(logging.WARNING)
 
     def _showwarning(
         message: Warning | str,
