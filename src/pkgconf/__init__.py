@@ -14,7 +14,7 @@ import pkgconf._path_entrypoints
 from pkgconf._path_entrypoints import PathWarning
 
 
-__version__ = '2.5.1-0'
+__version__ = '2.5.1-1'
 
 
 _LOGGER = logging.getLogger(__name__)
