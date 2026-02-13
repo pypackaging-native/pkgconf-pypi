@@ -63,6 +63,8 @@ If the embedded pkgconf cannot find a package, by default it will fallback to th
 ``pkgconf``/``pkg-config``, which may find packages present on the system. To disable
 this behavior, set the ``PKGCONF_PYPI_EMBEDDED_ONLY=1`` environment variable.
 
+To enable debug output to ``syserr``, set ``PYPI_PKGCONF_DEBUG=1``.
+
 API
 ===
 
