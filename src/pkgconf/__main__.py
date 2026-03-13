@@ -52,7 +52,37 @@ def _venv_paths(config_vars: dict[str, str]) -> str:
     return sysconfig.get_paths(vars=config_vars)
 
 
-def _entrypoint():
+def _vanilla_entrypoint():
+    if 'FORCE_PKGCONF_PYPI' in os.environ:
+        # For backwards compatibility, and in cases where the user can't specify
+        # the pkg-config binary name, allow enabling the Python-aware behavior,
+        # by setting FORCE_PKGCONF_PYPI.
+        _python_aware_entrypoint()
+    else:
+        if not (executable := pkgconf._get_executable()):
+            print('pkgconf-pypi error: Unable to find bundled pkgconf/pkg-config executable!', file=sys.stderr)
+            sys.exit(1)
+        if (
+            not os.environ.get('PKG_CONFIG_PATH')
+            and not os.environ.get('PKG_CONFIG_LIBDIR')
+            and not any(arg.startswith('--with-path') for arg in sys.argv[1:])
+        ):
+            warnings.warn(
+                (
+                    'PKG_CONFIG_PATH not specified, and the system is unavailable! '
+                    "The 'pkgconf' executable provided by pkgconf-pypi does not "
+                    'support searching for system-level .pc files, you must '
+                    'provide a search path instead. If you want the search path to '
+                    'be computed from the installed Python packages, please use '
+                    "the 'pkgconf-pypi' executable instead, or set "
+                    'FORCE_PKGCONF_PYPI.'
+                ),
+                stacklevel=2,
+            )
+            sys.exit(subprocess.run([os.fspath(executable), *sys.argv[1:]]).returncode)
+
+
+def _python_aware_entrypoint():
     # Since project.script entrypoints use an hardcoded interpreter path from
     # the environment they were installed in, when stacking environments (eg.
     # using venv's --system-site-packages option), the entrypoint will run in

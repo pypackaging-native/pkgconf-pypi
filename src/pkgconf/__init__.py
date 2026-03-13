@@ -37,8 +37,8 @@ def _get_system_executable() -> pathlib.Path | None:
     return None
 
 
-def get_executable() -> pathlib.Path:
-    """Get the pkgconf executable."""
+def _get_executable() -> pathlib.Path | None:
+    """Get the bundled pkgconf executable."""
     executable: pathlib.Path | None
 
     if os.name == 'posix':
@@ -53,9 +53,14 @@ def get_executable() -> pathlib.Path:
         if executable.exists():
             return executable
 
+
+def get_executable() -> pathlib.Path:
+    """Get the pkgconf executable."""
+    if executable := _get_executable():
+        return executable
+
     warnings.warn('Bundled pkgconf not found, using the system executable', stacklevel=2)
-    executable = _get_system_executable()
-    if executable:
+    if executable := _get_system_executable():
         return executable
 
     msg = 'No pkgconf/pkg-config executable available'

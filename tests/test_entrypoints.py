@@ -1,3 +1,4 @@
+import os
 import re
 import subprocess
 import sys
@@ -8,14 +9,14 @@ import pkgconf
 import pkgconf.__main__
 
 
-@pytest.mark.parametrize('name', ['pkgconf', 'pkg-config'])
+@pytest.mark.parametrize('name', ['pkgconf', 'pkg-config', 'pkgconf-pypi'])
 def test_entries(env, name):
     # TODO: Check PKG_CONFIG_PATH is correctly set
     help_text = env.run_script('pkgconf', '--help')
     assert help_text.decode().startswith('usage: pkgconf')
 
 
-def test_fallback(mocker, monkeypatch):
+def test_pkgconf_pypi_fallback(mocker, monkeypatch):
     """Test that we fallback to the system pkgconf if ours fails."""
     mocker.patch('pkgconf.run_pkgconf', side_effect=subprocess.CalledProcessError(1, '(cmd)'))
     mocker.patch('subprocess.run', return_value=subprocess.CompletedProcess(['(cmd)'], 0))
@@ -32,7 +33,7 @@ def test_fallback(mocker, monkeypatch):
     sys.exit.assert_called_with(0)
 
 
-def test_no_fallback(mocker, monkeypatch):
+def test_pkgconf_pypi_no_fallback(mocker, monkeypatch):
     """Test that we don't fail if there's no system pkgconf and ours fails."""
     mocker.patch('pkgconf.run_pkgconf', side_effect=subprocess.CalledProcessError(1, '(cmd)'))
     mocker.patch('subprocess.run', return_value=subprocess.CompletedProcess(['(cmd)'], 0))
@@ -48,7 +49,7 @@ def test_no_fallback(mocker, monkeypatch):
     sys.exit.assert_called_with(1)
 
 
-def test_venv_redirect(mocker, monkeypatch):
+def test_pkgconf_pypi_venv_redirect(mocker, monkeypatch):
     mocker.patch('subprocess.run', return_value=subprocess.CompletedProcess(['(cmd)'], 0))
     mocker.patch('sys.exit')
 
@@ -57,13 +58,13 @@ def test_venv_redirect(mocker, monkeypatch):
     args = ['--libs', 'py-test-inexistent']
     monkeypatch.setattr(sys, 'argv', ['(argv0)', *args])
 
-    pkgconf.__main__._entrypoint()
+    pkgconf.__main__._python_aware_entrypoint()
 
     assert subprocess.run.call_args.args[0][1:] == ['-m', 'pkgconf', *args]
     sys.exit.assert_called_with(0)
 
 
-def test_venv_system_site_packages(container):
+def test_pkgconf_pypi_venv_system_site_packages(container):
     # Install pkgconf in the global site-packages
     status, out = container.exec_run(['pip', 'install', '/project'])
     assert status == 0, out
@@ -78,7 +79,7 @@ def test_venv_system_site_packages(container):
 
     # Run pkg-config with VIRTUAL_ENV set
     status, out = container.exec_run(
-        ['pkg-config', '--cflags', 'register_pkg_config_path'],
+        ['pkgconf-pypi', '--cflags', 'register_pkg_config_path'],
         environment={'VIRTUAL_ENV': '/venv'},
         stderr=False,
     )
@@ -89,3 +90,37 @@ def test_venv_system_site_packages(container):
 def test_main(env):
     output = env.run_interpreter('-m', 'pkgconf', '--help')
     assert output.decode().startswith('usage: pkgconf')
+
+
+def test_vanilla_warn(env, packages):
+    p = subprocess.run(
+        ['pkgconf', '--cflags', 'foo'],
+        capture_output=True,
+        text=True,
+        env=env.env,
+    )
+    assert p.returncode == 1
+    assert 'PKG_CONFIG_PATH not specified, and the system is unavailable!' in p.stderr
+
+
+@pytest.mark.skipif(os.name == 'nt', reason='meson-python does not support bundling libraries in wheel on win32')
+def test_vanilla_force(env, packages):
+    env.install_from_path(packages / 'register-pkg-config-path', from_sdist=False)
+
+    p = subprocess.run(
+        ['pkgconf', '--cflags', 'register_pkg_config_path'],
+        capture_output=True,
+        text=True,
+        env=env.env,
+    )
+    assert p.returncode == 1
+    assert 'Package register_pkg_config_path was not found in the pkg-config search path.' in p.stderr
+
+    p = subprocess.run(
+        ['pkgconf', '--cflags', 'register_pkg_config_path'],
+        capture_output=True,
+        text=True,
+        env=env.env | {'FORCE_PKGCONF_PYPI': ''},
+    )
+    assert p.returncode == 0
+    assert p.stdout.startswith('-I')
