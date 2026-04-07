@@ -79,7 +79,7 @@ def _vanilla_entrypoint():
                 ),
                 stacklevel=2,
             )
-            sys.exit(subprocess.run([os.fspath(executable), *sys.argv[1:]]).returncode)
+        sys.exit(subprocess.run([os.fspath(executable), *sys.argv[1:]]).returncode)
 
 
 def _python_aware_entrypoint():
