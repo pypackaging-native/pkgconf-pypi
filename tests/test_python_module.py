@@ -39,6 +39,37 @@ def test_pkg_config_path_namespace(env, packages):
     assert path == [pathlib.Path(env.scheme['purelib'], 'namespace')]
 
 
+def test_pkg_config_path_namespace_multiple_locations(env, packages, tmp_path):
+    dst = tmp_path / 'namespace-pkgconfig-primary'
+    shutil.copytree(packages / 'namespace-pkgconfig-primary', dst)
+
+    env.install(['-e', dst])
+    env.install_from_path(packages / 'namespace-pkgconfig-secondary', from_sdist=False)
+
+    script = """
+import os
+import warnings
+import pkgconf
+import pkgconf._path_entrypoints
+
+warnings.simplefilter('error', pkgconf._path_entrypoints.PathWarning)
+paths = [
+    path for path in pkgconf.get_pkg_config_path()
+    if path.endswith(os.path.join('namespace', 'pkgconf'))
+]
+assert len(paths) == 1, paths
+"""
+    process = subprocess.run(
+        [os.fspath(env.interpreter), '-c', script],
+        env=env.env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert process.returncode == 0, process.stderr
+
+
 def test_pkg_config_path_error_on_import(env, packages):
     path = list(env.introspectable.call('pkgconf.get_pkg_config_path'))
     assert len(path) == 0

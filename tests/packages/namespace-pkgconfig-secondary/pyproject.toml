@@ -1,0 +1,10 @@
+[build-system]
+build-backend = 'hatchling.build'
+requires = ['hatchling']
+
+[project]
+name = 'namespace-pkgconfig-secondary'
+version = '1.0.0'
+
+[tool.hatch.build.targets.wheel]
+packages = ['namespace']
