@@ -53,9 +53,9 @@ def module_path(name: str) -> str:
     module = import_module_no_exec(name)
     # Check if submodule_search_locations is set on the spec.
     if module.__spec__.submodule_search_locations:
-        # If it contains a single path, use it.
-        if len(module.__spec__.submodule_search_locations) == 1:
-            return module.__spec__.submodule_search_locations[0]
+        # Namespace packages may span multiple locations. Return the first one,
+        # which matches the import system search order.
+        return next(iter(module.__spec__.submodule_search_locations))
     # Traversables often implement __fspath__, attempt to use it.
     traversable = importlib.resources.files(module)
     if isinstance(traversable, os.PathLike):
