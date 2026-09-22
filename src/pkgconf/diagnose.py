@@ -10,7 +10,8 @@ def report() -> None:
     for entrypoint in pkgconf._entry_points():
         print(f'  {entrypoint.name}:')
         print(f'    value: {entrypoint.value}')
-        print(f'     path: {entrypoint.path}')
+        for path in entrypoint.paths:
+            print(f'     path: {path}')
 
     print(f'PKG_CONFIG_PATH: {os.pathsep.join(pkgconf.get_pkg_config_path())}')
 

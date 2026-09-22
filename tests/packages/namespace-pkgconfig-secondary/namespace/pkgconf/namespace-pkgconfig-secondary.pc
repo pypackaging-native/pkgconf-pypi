@@ -1,0 +1,4 @@
+prefix=${pcfiledir}
+Name: namespace-pkgconfig-secondary
+Description: Secondary namespace fixture
+Version: 1.0.0

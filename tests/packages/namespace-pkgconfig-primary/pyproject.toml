@@ -1,0 +1,19 @@
+[build-system]
+build-backend = 'hatchling.build'
+requires = ['hatchling']
+
+[project]
+name = 'namespace-pkgconfig-primary'
+version = '1.0.0'
+
+[project.entry-points.pkg_config]
+namespace-pkgconfig-primary = 'namespace.pkgconf'
+# Multiple registrations of the same namespace must not duplicate search paths.
+namespace-pkgconfig-primary-alias = 'namespace.pkgconf'
+
+[tool.hatch.build]
+# Hatchling does not infer an editable import path for a data-only namespace.
+dev-mode-dirs = ['.']
+
+[tool.hatch.build.targets.wheel]
+packages = ['namespace']
