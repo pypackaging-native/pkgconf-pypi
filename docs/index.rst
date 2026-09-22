@@ -92,6 +92,12 @@ files registered by the ``pkg-config`` entrypoints_. If the ``PKG_CONFIG_PATH``
 environment variable is already set, the locations registered by Python packages
 will be appended.
 
+When an entrypoint refers to a namespace package, all of its directories are
+searched in Python's import search order, even if only one distribution registers
+the namespace. Duplicate directories (including symlink aliases) are included
+only once, preserving their first occurrence. If multiple directories contain a
+``.pc`` file with the same name, the first one takes precedence.
+
 If ``pkgconf-pypi`` cannot find a package, by default it will fallback to the
 system ``pkgconf``/``pkg-config``, which may find packages present on the
 system. To disable this behavior, set the ``PKGCONF_PYPI_EMBEDDED_ONLY=1``

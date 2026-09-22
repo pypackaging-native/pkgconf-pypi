@@ -45,21 +45,34 @@ def import_module_no_exec(name: str) -> types.ModuleType:
     return module
 
 
-def module_path(name: str) -> str:
-    """Resolve module name to file-system path.
+def unique_paths(paths: Iterable[str]) -> list[str]:
+    """Remove duplicate directories, preserving the first spelling and search order."""
+    result = []
+    seen = set()
+    for path in paths:
+        # A namespace can contain aliases of the same directory (e.g. lib/lib64).
+        key = os.path.normcase(os.path.realpath(path))
+        if key not in seen:
+            seen.add(key)
+            result.append(path)
+    return result
+
+
+def module_paths(name: str) -> list[str]:
+    """Resolve module name to file-system paths in import search order.
 
     WARNING: This places uninitialized modules in sys.modules.
     """
     module = import_module_no_exec(name)
     # Check if submodule_search_locations is set on the spec.
     if module.__spec__.submodule_search_locations:
-        # Namespace packages may span multiple locations. Return the first one,
-        # which matches the import system search order.
-        return next(iter(module.__spec__.submodule_search_locations))
+        # Namespace portions contribute resources together; no single location
+        # necessarily contains all the .pc files registered by this entrypoint.
+        return unique_paths(module.__spec__.submodule_search_locations)
     # Traversables often implement __fspath__, attempt to use it.
     traversable = importlib.resources.files(module)
     if isinstance(traversable, os.PathLike):
-        return os.fsdecode(os.fspath(traversable))
+        return [os.fsdecode(os.fspath(traversable))]
     # Give up :/
     msg = f'Unable to resolve the path for {name}'
     raise ValueError(msg)
@@ -215,7 +228,7 @@ class EntryPoint:
         return self._ep.dist
 
     @property
-    def path(self) -> str:
+    def paths(self) -> list[str]:
         try:
             return self._resolve_via_import_system()
         except Exception:
@@ -223,19 +236,19 @@ class EntryPoint:
             pkgconf._LOGGER.exception(msg)
             warnings.warn(PathWarning(msg, self), stacklevel=2)
         # Fallback method
-        return self._resolve_via_translation()
+        return [self._resolve_via_translation()]
 
-    def _resolve_via_import_system(self) -> str:
-        # module_path is not safe to run directly in the execution context, as
+    def _resolve_via_import_system(self) -> list[str]:
+        # module_paths is not safe to run directly in the execution context, as
         # it alters the import state, so try to run it in an isolated context.
         try:
-            return run_in_isolated_context(module_path, self.value)
+            return run_in_isolated_context(module_paths, self.value)
         except Exception:
-            pkgconf._LOGGER.exception('Failed to run module_path in isolated context')
+            pkgconf._LOGGER.exception('Failed to run module_paths in isolated context')
         # Fallback to running in the current context, but try to save and
         # restore the original import state.
         with replace_sys_modules():
-            return module_path(self.value)
+            return module_paths(self.value)
 
     def _resolve_via_translation(self) -> str:
         assert self.dist
@@ -248,7 +261,7 @@ class EntryPoint:
 def entry_points(**select_params: Any) -> list[EntryPoint]:
     original_eps = importlib.metadata.entry_points(**select_params)
     our_eps = map(EntryPoint, original_eps)
-    valid_eps = filter(operator.attrgetter('path'), our_eps)
+    valid_eps = filter(operator.attrgetter('paths'), our_eps)
     return sorted(valid_eps, key=operator.attrgetter('name'))
 
 

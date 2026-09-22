@@ -81,7 +81,7 @@ def get_pkg_config_path() -> list[str]:
     [project.entry-points.pkg-config]
     entrypoint-name = 'project.package'
     """
-    return [ep.path for ep in _entry_points()]
+    return pkgconf._path_entrypoints.unique_paths(path for ep in _entry_points() for path in ep.paths)
 
 
 def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedProcess[bytes | str]:

@@ -1,1 +1,4 @@
 prefix=${pcfiledir}
+Name: namespace-pkgconfig-primary
+Description: Primary namespace fixture
+Version: 1.0.0
