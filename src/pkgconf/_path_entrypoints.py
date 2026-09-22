@@ -1,3 +1,4 @@
+import atexit
 import contextlib
 import importlib.machinery
 import importlib.metadata
@@ -84,6 +85,7 @@ def run_in_subinterpreter(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs)
 
 
 _worker = None
+_worker_process = None
 _WORKER_CODE = r"""
 import sys, pickle
 
@@ -112,7 +114,7 @@ while True:
 
 def _make_worker():
     """Start worker subprocess and assign callable to _worker."""
-    global _worker
+    global _worker, _worker_process
     import subprocess
 
     proc = subprocess.Popen(
@@ -120,6 +122,7 @@ def _make_worker():
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
     )
+    _worker_process = proc
 
     def _worker_fn(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
         payload = pickle.dumps((fn, args, kwargs))
@@ -153,6 +156,19 @@ def run_in_subprocess(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> 
     return _worker(fn, *args, **kwargs)
 
 
+def _cleanup_isolated_contexts() -> None:
+    global _subinterpreter, _worker_process
+
+    if _subinterpreter is not None:
+        _subinterpreter.close()
+        _subinterpreter = None
+
+    if _worker_process is not None:
+        _worker_process.terminate()
+        _worker_process.wait(timeout=1)
+        _worker_process = None
+
+
 def run_in_isolated_context(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
     try:
         if sys.version_info >= (3, 14):
@@ -160,6 +176,9 @@ def run_in_isolated_context(fn: Callable[P, T], *args: P.args, **kwargs: P.kwarg
     except Exception:
         pkgconf._LOGGER.exception(f'Failed to run {fn} in subinterpreter, falling back to subprocess')
     return run_in_subprocess(fn, *args, **kwargs)
+
+
+atexit.register(_cleanup_isolated_contexts)
 
 
 @contextlib.contextmanager
