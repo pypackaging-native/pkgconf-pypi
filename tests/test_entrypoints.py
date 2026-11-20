@@ -97,6 +97,7 @@ def test_vanilla_warn(env, packages):
         ['pkgconf', '--cflags', 'foo'],
         capture_output=True,
         text=True,
+        check=False,
         env=env.env,
     )
     assert p.returncode == 1
@@ -111,6 +112,7 @@ def test_vanilla_force(env, packages):
         ['pkgconf', '--cflags', 'register_pkg_config_path'],
         capture_output=True,
         text=True,
+        check=False,
         env=env.env,
     )
     assert p.returncode == 1
@@ -120,6 +122,7 @@ def test_vanilla_force(env, packages):
         ['pkgconf', '--cflags', 'register_pkg_config_path'],
         capture_output=True,
         text=True,
+        check=False,
         env=env.env | {'FORCE_PKGCONF_PYPI': ''},
     )
     assert p.returncode == 0
