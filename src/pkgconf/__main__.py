@@ -39,7 +39,7 @@ def main() -> None:
             cmd = [os.fspath(system_executable), *args]
             _LOGGER.info(f'Running the system {system_executable.name}')
             _LOGGER.info('$ ' + shlex.join(cmd))
-            returncode = subprocess.run(cmd).returncode
+            returncode = subprocess.run(cmd, check=False).returncode
         elif isinstance(e, subprocess.CalledProcessError):
             returncode = e.returncode
 
@@ -79,7 +79,8 @@ def _vanilla_entrypoint():
                 ),
                 stacklevel=2,
             )
-        sys.exit(subprocess.run([os.fspath(executable), *sys.argv[1:]]).returncode)
+        process = subprocess.run([os.fspath(executable), *sys.argv[1:]], check=False)
+        sys.exit(process.returncode)
 
 
 def _python_aware_entrypoint():
@@ -96,7 +97,7 @@ def _python_aware_entrypoint():
         venv_vars['base'] = venv_vars['platbase'] = os.environ['VIRTUAL_ENV']
         scripts = _venv_paths(venv_vars)['scripts']
         python_path = os.path.join(scripts, 'python')
-        process = subprocess.run([python_path, '-m', 'pkgconf', *sys.argv[1:]])
+        process = subprocess.run([python_path, '-m', 'pkgconf', *sys.argv[1:]], check=False)
         sys.exit(process.returncode)
     else:
         _setup_cli()
