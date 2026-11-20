@@ -14,7 +14,7 @@ import pkgconf._path_entrypoints
 from pkgconf._path_entrypoints import PathWarning
 
 
-__version__ = '2.5.1-0'
+__version__ = '2.5.1-2'
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,8 +37,8 @@ def _get_system_executable() -> pathlib.Path | None:
     return None
 
 
-def get_executable() -> pathlib.Path:
-    """Get the pkgconf executable."""
+def _get_executable() -> pathlib.Path | None:
+    """Get the bundled pkgconf executable."""
     executable: pathlib.Path | None
 
     if os.name == 'posix':
@@ -53,9 +53,14 @@ def get_executable() -> pathlib.Path:
         if executable.exists():
             return executable
 
+
+def get_executable() -> pathlib.Path:
+    """Get the pkgconf executable."""
+    if executable := _get_executable():
+        return executable
+
     warnings.warn('Bundled pkgconf not found, using the system executable', stacklevel=2)
-    executable = _get_system_executable()
-    if executable:
+    if executable := _get_system_executable():
         return executable
 
     msg = 'No pkgconf/pkg-config executable available'
@@ -92,7 +97,7 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedPro
     cmd = [os.fspath(get_executable()), *args]
     _CLI_LOGGER.info('Running the Python pkgconf')
     _CLI_LOGGER.info('$ ' + shlex.join(('PKG_CONFIG_PATH=' + shlex.quote(env['PKG_CONFIG_PATH']), *cmd)))
-    return subprocess.run(cmd, env=env, **subprocess_kwargs)
+    return subprocess.run(cmd, env=env, **subprocess_kwargs)  # noqa: PLW1510
 
 
 __all__ = [

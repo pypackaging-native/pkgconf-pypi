@@ -1,3 +1,4 @@
+import atexit
 import contextlib
 import importlib.machinery
 import importlib.metadata
@@ -51,7 +52,7 @@ def module_path(name: str) -> str:
     """
     module = import_module_no_exec(name)
     # Check if submodule_search_locations is set on the spec.
-    if module.__spec__.submodule_search_locations:
+    if module.__spec__.submodule_search_locations:  # noqa: SIM102
         # If it contains a single path, use it.
         if len(module.__spec__.submodule_search_locations) == 1:
             return module.__spec__.submodule_search_locations[0]
@@ -84,6 +85,7 @@ def run_in_subinterpreter(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs)
 
 
 _worker = None
+_worker_process = None
 _WORKER_CODE = r"""
 import sys, pickle
 
@@ -112,7 +114,7 @@ while True:
 
 def _make_worker():
     """Start worker subprocess and assign callable to _worker."""
-    global _worker
+    global _worker, _worker_process
     import subprocess
 
     proc = subprocess.Popen(
@@ -120,6 +122,7 @@ def _make_worker():
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
     )
+    _worker_process = proc
 
     def _worker_fn(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
         payload = pickle.dumps((fn, args, kwargs))
@@ -153,13 +156,29 @@ def run_in_subprocess(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> 
     return _worker(fn, *args, **kwargs)
 
 
+def _cleanup_isolated_contexts() -> None:
+    global _subinterpreter, _worker_process
+
+    if _subinterpreter is not None:
+        _subinterpreter.close()
+        _subinterpreter = None
+
+    if _worker_process is not None:
+        _worker_process.terminate()
+        _worker_process.wait(timeout=1)
+        _worker_process = None
+
+
 def run_in_isolated_context(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
     try:
         if sys.version_info >= (3, 14):
             return run_in_subinterpreter(fn, *args, **kwargs)
-    except Exception:
+    except Exception:  # noqa: BLE001
         pkgconf._LOGGER.exception(f'Failed to run {fn} in subinterpreter, falling back to subprocess')
     return run_in_subprocess(fn, *args, **kwargs)
+
+
+atexit.register(_cleanup_isolated_contexts)
 
 
 @contextlib.contextmanager
@@ -199,7 +218,7 @@ class EntryPoint:
     def path(self) -> str:
         try:
             return self._resolve_via_import_system()
-        except Exception:
+        except Exception:  # noqa: BLE001
             msg = 'Failed to resolve the entrypoint path via the import system (see log for details)'
             pkgconf._LOGGER.exception(msg)
             warnings.warn(PathWarning(msg, self), stacklevel=2)
@@ -211,7 +230,7 @@ class EntryPoint:
         # it alters the import state, so try to run it in an isolated context.
         try:
             return run_in_isolated_context(module_path, self.value)
-        except Exception:
+        except Exception:  # noqa: BLE001
             pkgconf._LOGGER.exception('Failed to run module_path in isolated context')
         # Fallback to running in the current context, but try to save and
         # restore the original import state.
