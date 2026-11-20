@@ -29,7 +29,7 @@ def test_pkgconf_pypi_fallback(mocker, monkeypatch):
 
     pkgconf.__main__.main()
 
-    subprocess.run.assert_called_with(['(pkgconf-path)', *args])
+    subprocess.run.assert_called_with(['(pkgconf-path)', *args], check=False)
     sys.exit.assert_called_with(0)
 
 
