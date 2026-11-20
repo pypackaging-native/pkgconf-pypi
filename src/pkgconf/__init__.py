@@ -97,7 +97,7 @@ def run_pkgconf(*args: str, **subprocess_kwargs: Any) -> subprocess.CompletedPro
     cmd = [os.fspath(get_executable()), *args]
     _CLI_LOGGER.info('Running the Python pkgconf')
     _CLI_LOGGER.info('$ ' + shlex.join(('PKG_CONFIG_PATH=' + shlex.quote(env['PKG_CONFIG_PATH']), *cmd)))
-    return subprocess.run(cmd, env=env, **subprocess_kwargs)
+    return subprocess.run(cmd, env=env, **subprocess_kwargs)  # noqa: PLW1510
 
 
 __all__ = [
